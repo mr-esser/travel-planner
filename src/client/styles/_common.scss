@@ -1,0 +1,44 @@
+// General colors (some picked directly from the MeaningCloud logo)
+$white: ghostwhite;
+$brownish: #545454;
+$light-orange: #ffb76c;
+$dark-orange: #ff7f04;
+$lighter-blue: #e7f0fe;
+$light-blue: #87b7fb;
+$dark-blue: #1c2a43;
+
+// Color semantics/ application
+$body-color: $white;
+$header-color: $dark-blue;
+$text-background-color: $lighter-blue;
+$box-outline-color: $brownish;
+
+@mixin background-gradient($from, $to, $from-color, $to-color) {
+  background: $from-color;
+  background: -webkit-linear-gradient($from, $from-color, $to-color);
+  background: -moz-linear-gradient($from, $from-color, $to-color);
+  background: linear-gradient($to, $from-color, $to-color);
+}
+
+// Common text properties
+$base-text-line-height: 16px;
+
+@mixin text-link($color) {
+  a.text-link {
+    // Prevent standard underlining
+    text-decoration: none;
+    color: $color;
+    &:visited {
+      // Prevent color change after click
+      color: $color;
+    }
+    // Provide feedback upon interaction
+    &:focus,
+    &:hover {
+      border-bottom: 1px solid $color;
+    }
+    &:active {
+      color: $dark-orange;
+    }
+  }
+}

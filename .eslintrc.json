@@ -1,0 +1,17 @@
+{
+  "root": true,
+  "env": {
+    "node": true,
+    "es2020": true
+  },
+  "extends": ["google"],
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "rules": {
+    "require-jsdoc": "off",
+    "no-undef": "error"
+
+  },
+  "ignorePatterns": ["/dist/*", "/node_modules/*"]
+}

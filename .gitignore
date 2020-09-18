@@ -151,3 +151,6 @@ dist
 .history
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,node,macos
+
+### Custom ignore rules for project travel-planner
+apiKey.js
