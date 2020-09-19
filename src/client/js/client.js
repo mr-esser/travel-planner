@@ -1,8 +1,6 @@
-import {WEATHER_API_KEY} from './apiKey';
+import {getWeatherData} from './fetchWeatherData';
 
 /* Global Variables */
-// Unit system used in weather map API requests
-const UNITS = 'metric';
 
 // Journal server info
 const SERVER = 'localhost';
@@ -13,10 +11,6 @@ const PORT = 8080;
 // App could be up for a long time, so not making this a constant.
 const createDisplayDate = function() {
   return new Date().toDateString();
-};
-
-const getWeatherServiceUrl = function(zipAndCountryCode) {
-  return `http://api.openweathermap.org/data/2.5/weather?zip=${zipAndCountryCode}&units=${UNITS}&appid=${WEATHER_API_KEY}`;
 };
 
 const getJournalServiceUrl = function(route = 'all') {
@@ -51,13 +45,6 @@ const updateUI = function({
 };
 
 /* Main functions */
-/* Function to GET weather data from third-party service. */
-const getWeatherData = async function(zipAndCountryCode) {
-  const serviceUrl = getWeatherServiceUrl(zipAndCountryCode);
-  // Note(!): fetch will only reject on network errors!
-  const response = await fetch(serviceUrl);
-  return response.json();
-};
 
 /* Function to POST project data to sever */
 const postJournalData = async function(url = '', journalData = {}) {
