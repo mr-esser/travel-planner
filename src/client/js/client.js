@@ -1,12 +1,8 @@
 import {WEATHER_API_KEY} from './apiKey';
 
 /* Global Variables */
-// Pause enforced in-between identical weather map API requests
-const REQUEST_PAUSE = 12 * 60 * 1000; // 12 minutes
 // Unit system used in weather map API requests
 const UNITS = 'metric';
-// Cache to help avoid request rejections due to excessive request rate
-const weatherDataCache = new Map();
 
 // Journal server info
 const SERVER = 'localhost';
@@ -55,43 +51,12 @@ const updateUI = function({
 };
 
 /* Main functions */
-
-/* Function to GET weather data from third-party service.
- * Will attempt to cache requests. */
+/* Function to GET weather data from third-party service. */
 const getWeatherData = async function(zipAndCountryCode) {
-  const cacheWeatherData = function(zipAndCountryCode, weatherData) {
-    weatherDataCache.set(zipAndCountryCode, {
-      timestamp: Date.now(),
-      response: weatherData,
-    });
-  };
-  const fetchWeatherDataFromService = async function(zipAndCountryCode) {
-    const serviceUrl = getWeatherServiceUrl(zipAndCountryCode);
-    // Note(!): fetch will only reject on network errors!
-    const response = await fetch(serviceUrl);
-    return response.json();
-  };
-  const getWeatherDataFromCache = function(zipAndCountryCode) {
-    let result;
-    if (weatherDataCache.has(zipAndCountryCode)) {
-      const cachedResponse = weatherDataCache.get(zipAndCountryCode);
-      const lastUpdated = cachedResponse.timestamp;
-      const elapsedTime = Date.now() - lastUpdated;
-      if (elapsedTime <= REQUEST_PAUSE) {
-        result = cachedResponse.response;
-      } else {
-        weatherDataCache.delete(zipAndCountryCode);
-      }
-    }
-    return result;
-  };
-
-  let data = getWeatherDataFromCache(zipAndCountryCode);
-  if (!data) {
-    data = await fetchWeatherDataFromService(zipAndCountryCode);
-    cacheWeatherData(zipAndCountryCode, data);
-  }
-  return data;
+  const serviceUrl = getWeatherServiceUrl(zipAndCountryCode);
+  // Note(!): fetch will only reject on network errors!
+  const response = await fetch(serviceUrl);
+  return response.json();
 };
 
 /* Function to POST project data to sever */
