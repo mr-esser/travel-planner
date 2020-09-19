@@ -1,5 +1,3 @@
-import {getWeatherData} from './fetchWeatherData';
-
 /* Global Variables */
 
 // Journal server info
@@ -13,7 +11,7 @@ const createDisplayDate = function() {
   return new Date().toDateString();
 };
 
-const getJournalServiceUrl = function(route = 'all') {
+const getServiceUrl = function(route = '') {
   return `http://${SERVER}:${PORT}/${route}`;
 };
 
@@ -47,20 +45,20 @@ const updateUI = function({
 /* Main functions */
 
 /* Function to POST project data to sever */
-const postJournalData = async function(url = '', journalData = {}) {
+const postToServer = async function(url = '', objectData = {}) {
   // Note(!): fetch will only reject on network errors!
   const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(journalData),
+    body: JSON.stringify(objectData),
   });
   return response.json();
 };
 
 /* Function to GET project data from server */
-const getJournalData = async function(url = '') {
+const getFromServer = async function(url = '') {
   // Note(!): fetch will only reject on network errors!
   const response = await fetch(url);
   return response.json();
@@ -76,7 +74,11 @@ const handleGenerate = async function handleGenerate(event) {
       content: getInputText('#feelings'),
     };
     try {
-      const weatherData = await getWeatherData(getInputText('#zip'));
+      const weatherUrl = getServiceUrl('weather');
+      console.debug(weatherUrl);
+      const zipData = {zipAndCountryCode: getInputText('#zip')};
+      console.debug(JSON.stringify(zipData));
+      const weatherData = await postToServer(weatherUrl, zipData);
       // Temperature unit is hard-coded. See constant UNITS.
       journalData.temperature = `${weatherData.main.temp} °C`;
       journalData.location = `${weatherData.name}, ${weatherData.sys.country}`;
@@ -89,8 +91,10 @@ const handleGenerate = async function handleGenerate(event) {
   };
 
   const synchronizeWithServer = async function(journalData) {
-    await postJournalData(getJournalServiceUrl(), journalData);
-    return getJournalData(getJournalServiceUrl());
+    console.debug(JSON.stringify(journalData));
+    const route = 'all';
+    await postToServer(getServiceUrl(route), journalData);
+    return getFromServer(getServiceUrl(route));
   };
 
   try {
@@ -117,7 +121,7 @@ window.addEventListener('DOMContentLoaded', () => {
   generateButton.addEventListener('click', handleGenerate);
   // Try to load data from the server on startup.
   // There may already be some available.
-  getJournalData(getJournalServiceUrl())
+  getFromServer(getServiceUrl('all'))
       .then((data) => updateUI(data))
       .catch((error) => console.error(error));
 });

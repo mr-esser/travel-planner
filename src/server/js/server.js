@@ -1,5 +1,5 @@
 /* Import base functionality */
-require('dotenv').config();
+const {fetchWeatherData} = require('./fetchWeatherData');
 
 /* Basic express configuration */
 const express = require('express');
@@ -32,6 +32,19 @@ app.get('/', function(req, res) {
 
 app.get('/all', function(req, res) {
   res.json(projectData);
+});
+
+// TODO: Should be a GET request with a query.
+app.post('/weather', async function(req, res, next) {
+  try {
+    const {zipAndCountryCode} = req.body;
+    const weatherData = await fetchWeatherData(zipAndCountryCode);
+    console.debug(JSON.stringify(weatherData));
+    // TODO: Do not parse and then serialize
+    res.status(201).json(weatherData);
+  } catch (error) {
+    next(error);
+  }
 });
 
 /* POST route to store an entry
