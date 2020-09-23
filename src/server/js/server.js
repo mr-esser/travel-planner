@@ -1,5 +1,6 @@
 /* Import base functionality */
 const {fetchWeatherData} = require('./fetchWeatherData');
+const {fetchGeoData} = require('./fetchGeoData');
 
 /* Basic express configuration */
 const express = require('express');
@@ -32,6 +33,18 @@ app.get('/', function(req, res) {
 
 app.get('/all', function(req, res) {
   res.json(projectData);
+});
+
+// TODO: Test
+app.get('/geodata', async function(req, res, next) {
+  try {
+    // TODO: Validate?
+    const geoData = await fetchGeoData(req.query.city, req.query.country);
+    console.debug(geoData.geonames[0].lng, geoData.geonames[0].lat);
+    res.status(200).send(geoData);
+  } catch (error) {
+    next(error);
+  }
 });
 
 // TODO: Should be a GET request with a query.

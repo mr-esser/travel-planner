@@ -154,3 +154,4 @@ dist
 
 ### Custom ignore rules for project travel-planner
 apiKey.js
+*.http
