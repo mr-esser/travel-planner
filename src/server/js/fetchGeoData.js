@@ -38,7 +38,7 @@ const checkParams = function(city, country) {
   }
   // TODO: Check regexp
   if (country && country.trim()) {
-    const matches = country.match(/[A-Z][A-Z]$/i) ?? [];
+    const matches = country.match(/^[A-Z][A-Z]$/i) ?? [];
     if (matches.length === 0) {
       throw new ValidationError(
           400, `Param 'country' must be a two-letter-code`,

@@ -64,7 +64,7 @@ describe(`'fetchGeoData' should`, () => {
       async () => {
         expect.hasAssertions();
         try {
-          await fetchGeoData('Berlin', 'X9');
+          await fetchGeoData('Berlin', '9AB');
         } catch (error) {
           expect(error).toBeInstanceOf(ValidationError);
           expect(error.message)

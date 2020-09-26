@@ -38,10 +38,9 @@ app.get('/all', function(req, res) {
 // TODO: Test
 app.get('/geodata', async function(req, res, next) {
   try {
-    // TODO: Validate?
-    const geoData = await fetchGeoData(req.query.city, req.query.country);
-    console.debug(geoData.geonames[0].lng, geoData.geonames[0].lat);
-    res.status(200).send(geoData);
+    const geoData = await fetchGeoData(req.query?.city, req.query?.country);
+    console.debug(JSON.stringify(geoData));
+    res.status(200).set('Content-Type', 'application/json').send(geoData);
   } catch (error) {
     next(error);
   }
