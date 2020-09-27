@@ -35,7 +35,6 @@ app.get('/all', function(req, res) {
   res.json(projectData);
 });
 
-// TODO: Test
 app.get('/geodata', async function(req, res, next) {
   try {
     const geoData = await fetchGeoData(req.query?.city, req.query?.country);
@@ -46,14 +45,11 @@ app.get('/geodata', async function(req, res, next) {
   }
 });
 
-// TODO: Should be a GET request with a query.
-app.post('/weather', async function(req, res, next) {
+app.get('/weather', async function(req, res, next) {
   try {
-    const {zipAndCountryCode} = req.body;
-    const weatherData = await fetchWeatherData(zipAndCountryCode);
+    const weatherData = await fetchWeatherData(req.query?.lat, req.query?.long);
     console.debug(JSON.stringify(weatherData));
-    // TODO: Do not parse and then serialize
-    res.status(201).json(weatherData);
+    res.status(200).set('Content-Type', 'application/json').send(weatherData);
   } catch (error) {
     next(error);
   }

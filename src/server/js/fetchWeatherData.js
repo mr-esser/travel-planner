@@ -1,28 +1,78 @@
-// TODO: Consider defining server and port in .env, too
 require('dotenv').config();
 const fetch = require('node-fetch');
 
-// Unit system used in weather map API requests
-const UNITS = 'metric';
-
-/* Function to GET weather data from third-party service. */
+/* Function to GET geo data from third-party service. */
 const fetchWeatherData = async function(
-    zipAndCountryCode,
+    latitude = '',
+    longitude = '',
+    check = checkParams,
     getServiceUrl=getWeatherServiceUrl,
 ) {
-  const serviceUrl = getServiceUrl(zipAndCountryCode);
+  check(latitude, longitude);
+
+  const serviceUrl = getServiceUrl(latitude, longitude);
   console.debug(serviceUrl);
+
   // Note(!): fetch will only reject on network errors!
-  const response = await fetch(serviceUrl);
-  return response.json();
+  // Weather service uses proper HTTP response codes.
+  const serviceResponse = await fetch(serviceUrl);
+  const result = await serviceResponse.json();
+  if (!serviceResponse.ok) {
+    throw new Error(
+        'Weather service responded with HTTP code ' +
+        result.status + ' and message ' + result.error,
+    );
+  }
+  return result;
 };
 
-// TODO: Should use proper param encoding with URL and searchparams
-const getWeatherServiceUrl = function(
-    zipAndCountryCode, units=UNITS, appid=process.env.WEATHER_API_KEY) {
-  return `http://api.openweathermap.org/data/2.5/weather?zip=${zipAndCountryCode}&units=${units}&appid=${appid}`;
+/* Weather API is very benevolent with regard to lat and long.
+ * It seems to accept any number.
+ * Since this code is expected to be called with valid coordinates
+ * obtained for an existing city's name, anyway,
+ * being too strict here does not seem to make much sense. */
+const checkParams = function(latitude, longitude) {
+  const isValidLongitude = Number.isNaN(Number.parseFloat(longitude));
+  const isValidLatitude = Number.isNaN(Number.parseFloat(latitude));
+
+  if (!isValidLongitude||!isValidLatitude) {
+    // TODO: Code should be set by express error handler!
+    // TODO: ValidationError should be put in its own file, later. !!!!!!
+    throw new ValidationError(
+        400,
+        `Params 'latitude' and 'longitude' must both be numbers`);
+  }
 };
+
+// CONTINUE HERE
+const getWeatherServiceUrl = function(
+    latitude='',
+    longitude='',
+    baseUrl = process.env.WEATHER_URL,
+    apiKey = process.env.WEATHER_API_KEY,
+) {
+  const url = new URL(baseUrl);
+  url.searchParams.append('key', apiKey);
+  url.searchParams.append('lang', 'EN'); // default
+  url.searchParams.append('units', 'M'); // default
+  url.searchParams.append('days', 16); // default
+  url.searchParams.append('lat', latitude);
+  url.searchParams.append('lon', longitude);
+  return url;
+};
+
+
+class ValidationError extends Error {
+  constructor(code, message) {
+    super(message);
+    this.name = 'ValidationError';
+    this.statusMessage = message;
+    this.statusCode = code;
+  }
+}
 
 module.exports = {
   fetchWeatherData: fetchWeatherData,
+  getWeatherServiceUrl: getWeatherServiceUrl,
+  ValidationError: ValidationError,
 };
