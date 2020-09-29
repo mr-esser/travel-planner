@@ -1,5 +1,6 @@
 require('dotenv').config();
 const fetch = require('node-fetch');
+const {ValidationError} = require('./ValidationError');
 
 /* Function to GET geo data from third-party service. */
 const fetchGeoData = async function(
@@ -33,7 +34,6 @@ const fetchGeoData = async function(
 const checkParams = function(city, country) {
   if (!city || !city.trim()) {
     // TODO: Code should be set by express error handler!
-    // TODO: ValidationError should probably be put in its own file, later.
     throw new ValidationError(400, `Param 'city' must not be empty`);
   }
   // TODO: Check regexp
@@ -63,18 +63,7 @@ const getGeoServiceUrl = function(
   return url;
 };
 
-
-class ValidationError extends Error {
-  constructor(code, message) {
-    super(message);
-    this.name = 'ValidationError';
-    this.statusMessage = message;
-    this.statusCode = code;
-  }
-}
-
 module.exports = {
   fetchGeoData: fetchGeoData,
   getGeoServiceUrl: getGeoServiceUrl,
-  ValidationError: ValidationError,
 };

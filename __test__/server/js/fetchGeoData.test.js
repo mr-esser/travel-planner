@@ -1,18 +1,9 @@
 jest.mock('node-fetch');
 const fetch = require('node-fetch');
-const {
-  fetchGeoData, getGeoServiceUrl, ValidationError,
-} = require('./../../../src/server/js/fetchGeoData');
-
-test(`ValidationError should have properties 'message' and 'code'`, () => {
-  const code = 400;
-  const message = 'Error message';
-
-  const validationError = new ValidationError(code, message);
-
-  expect(validationError.statusCode).toBe(code);
-  expect(validationError.statusMessage).toBe(message);
-});
+const {fetchGeoData, getGeoServiceUrl} =
+ require('./../../../src/server/js/fetchGeoData');
+const {ValidationError} =
+ require('./../../../src/server/js/ValidationError');
 
 // Note(!): Don't rely on default arguments to keep tests independent of env!
 describe(`'getGeoServiceUrl' should`, () => {

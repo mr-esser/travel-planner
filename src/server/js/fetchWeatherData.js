@@ -1,5 +1,6 @@
 require('dotenv').config();
 const fetch = require('node-fetch');
+const {ValidationError} = require('./ValidationError');
 
 /* Function to GET geo data from third-party service. */
 const fetchWeatherData = async function(
@@ -20,7 +21,7 @@ const fetchWeatherData = async function(
   if (!serviceResponse.ok) {
     throw new Error(
         'Weather service responded with HTTP code ' +
-        result.status + ' and message ' + result.error,
+        serviceResponse.status + ' and message ' + result.error,
     );
   }
   return result;
@@ -32,10 +33,10 @@ const fetchWeatherData = async function(
  * obtained for an existing city's name, anyway,
  * being too strict here does not seem to make much sense. */
 const checkParams = function(latitude, longitude) {
-  const isValidLongitude = Number.isNaN(Number.parseFloat(longitude));
-  const isValidLatitude = Number.isNaN(Number.parseFloat(latitude));
+  const isInvalidLatitude = Number.isNaN(Number.parseFloat(latitude));
+  const isInvalidLongitude = Number.isNaN(Number.parseFloat(longitude));
 
-  if (!isValidLongitude||!isValidLatitude) {
+  if (isInvalidLatitude||isInvalidLongitude) {
     // TODO: Code should be set by express error handler!
     // TODO: ValidationError should be put in its own file, later. !!!!!!
     throw new ValidationError(
@@ -44,7 +45,6 @@ const checkParams = function(latitude, longitude) {
   }
 };
 
-// CONTINUE HERE
 const getWeatherServiceUrl = function(
     latitude='',
     longitude='',
@@ -61,18 +61,7 @@ const getWeatherServiceUrl = function(
   return url;
 };
 
-
-class ValidationError extends Error {
-  constructor(code, message) {
-    super(message);
-    this.name = 'ValidationError';
-    this.statusMessage = message;
-    this.statusCode = code;
-  }
-}
-
 module.exports = {
   fetchWeatherData: fetchWeatherData,
   getWeatherServiceUrl: getWeatherServiceUrl,
-  ValidationError: ValidationError,
 };
