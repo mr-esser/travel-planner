@@ -187,7 +187,7 @@ describe(`'fetchWeatherData' should`, () => {
     expect(mockFnJson).toBeCalledTimes(1);
   });
 
-  test.skip(`throw an error if weather service response body is no valid json`,
+  test(`throw an error if weather service response body is no valid json`,
       async () => {
         expect.assertions(5);
 
