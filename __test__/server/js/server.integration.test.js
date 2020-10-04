@@ -120,6 +120,46 @@ describe('GET on /weather', () => {
                   'must both be numbers\<br\>',
         )));
   });
+});
 
+describe('GET on /imagedata', () => {
+  test(`should yield one usable image record given valid params`, () => {
+    return/* ! */ request(server)
+        .get('/imagedata?loc=Berlin')
+        .expect('Content-Type', /json/)
+        .expect(200).then((res) => {
+          expect(res.body.total).toBeGreaterThan(0);
+          expect(res.body.totalHits).toBeGreaterThan(0);
+          expect(res.body.hits.length).toBe(3);
+          const firstRecord = res.body.hits[0];
+          expect(firstRecord.id).toBeDefined();
+          expect(firstRecord.type).toBe('photo');
+          expect(firstRecord.previewURL).toBeDefined();
+          expect(firstRecord.previewWidth).toBeDefined();
+          expect(firstRecord.previewHeight).toBeDefined();
+          expect(firstRecord.webformatURL).toBeDefined();
+          expect(firstRecord.webformatWidth).toBeDefined();
+          expect(firstRecord.webformatHeight).toBeDefined();
+          expect(firstRecord.user).toBeDefined();
+        });
+  });
+  test(`should fail with HTTP 400 given invalid param 'loc'`, () => {
+    return/* ! */ request(server)
+        .get('/imagedata?loc=')
+        .expect(400)
+        .expect('Content-Type', /text\/html/)
+        .then((res) => expect(res.text).toMatch(new RegExp(
+            'Param &#39;location&#39; must not be empty',
+        )));
+  });
+  test(`should fail with HTTP 400 given no query`, () => {
+    return/* ! */ request(server)
+        .get('/imagedata')
+        .expect(400)
+        .expect('Content-Type', /text\/html/)
+        .then((res) => expect(res.text).toMatch(new RegExp(
+            'Param &#39;location&#39; must not be empty',
+        )));
+  });
   /* 500 is hard to provoke */
 });

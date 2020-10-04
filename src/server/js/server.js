@@ -1,6 +1,7 @@
 /* Import base functionality */
 const {fetchWeatherData} = require('./fetchWeatherData');
 const {fetchGeoData} = require('./fetchGeoData');
+const {fetchImageData} = require('./fetchImageData');
 
 /* Basic express configuration */
 const express = require('express');
@@ -55,6 +56,15 @@ app.get('/weather', async function(req, res, next) {
   }
 });
 
+app.get('/imagedata', async function(req, res, next) {
+  try {
+    const imageData = await fetchImageData(req.query?.loc);
+    console.debug(JSON.stringify(imageData));
+    res.status(200).set('Content-Type', 'application/json').send(imageData);
+  } catch (error) {
+    next(error);
+  }
+});
 /* POST route to store an entry
  * Note(!): Deliberately not performing any validation here.
  * App serves as a general data store. Data validation is
