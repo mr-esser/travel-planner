@@ -38,7 +38,6 @@ const checkParams = function(latitude, longitude) {
 
   if (isInvalidLatitude||isInvalidLongitude) {
     // TODO: Code should be set by express error handler!
-    // TODO: ValidationError should be put in its own file, later. !!!!!!
     throw new ValidationError(
         400,
         `Params 'latitude' and 'longitude' must both be numbers`);
