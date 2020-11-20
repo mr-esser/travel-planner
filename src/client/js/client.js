@@ -66,13 +66,8 @@ const getFromServer = async function(url = '') {
 
 /* MAIN function called by event listener on 'Generate' button */
 const handleGenerate = async function handleGenerate(event) {
-  const buildJournalData = async function() {
-    const journalData = {
-      date: createDisplayDate(),
-      location: 'unavailable',
-      temperature: 'unavailable',
-      content: getInputText('#feelings'),
-    };
+  const buildTripData = async function() {
+    const tripData = buildTripData();
     try {
       const weatherUrl = getServiceUrl('weather');
       console.debug(weatherUrl);
@@ -80,14 +75,14 @@ const handleGenerate = async function handleGenerate(event) {
       console.debug(JSON.stringify(zipData));
       const weatherData = await postToServer(weatherUrl, zipData);
       // Temperature unit is hard-coded. See constant UNITS.
-      journalData.temperature = `${weatherData.main.temp} °C`;
-      journalData.location = `${weatherData.name}, ${weatherData.sys.country}`;
+      tripData.temperature = `${weatherData.main.temp} °C`;
+      tripData.location = `${weatherData.name}, ${weatherData.sys.country}`;
     } catch (error) {
       // Data is incomplete, but it can still be posted and displayed.
       // So, log and then go on.
       console.info(error);
     }
-    return journalData;
+    return tripData;
   };
 
   const synchronizeWithServer = async function(journalData) {
@@ -98,7 +93,7 @@ const handleGenerate = async function handleGenerate(event) {
   };
 
   try {
-    const journalData = await buildJournalData();
+    const journalData = await buildTripData();
     const serverData = await synchronizeWithServer(journalData);
     updateUI(serverData);
   } catch (networkError) {
