@@ -4,16 +4,15 @@ const buildTripData = async function(
     country,
     departureDate,
     returnDate,
-    rawGeoData = {},
-    rawWeatherData = {},
-    rawImageData = {}) {
+    rawWeatherData,
+    rawImageData) {
   const tripData = {
     city: city ?? 'unavailable',
     country: country ?? 'unavailable',
-    departureDate: departureDate ?? Date.now(),
-    returnDate: returnDate ?? Date.now(),
+    departureDate: departureDate,
+    returnDate: returnDate,
     duration: calculateDurationDays(departureDate, returnDate),
-    forecast: buildForecastData(rawWeatherData),
+    forecasts: buildForecastData(rawWeatherData),
     image: buildImageData(rawImageData),
   };
   return tripData;
@@ -33,29 +32,35 @@ const calculateDurationDays = function(startDate, endDate) {
   return (diffMillis/(1000*60*60*24)) + Math.sign(diffMillis)*1;
 };
 
-const buildForecastData = function(rawWeatherData) {
-  return {
-    datetime: '2020-09-28',
-    max_temp: 0,
-    min_temp: 0,
-    icon: 'x01x',
-    code: 111,
-    description: 'unavailable',
+const buildForecastData = function(rawForecast) {
+  const buildCompactDailyForecast = function(rawRecord) {
+    return {
+      datetime: rawRecord.datetime,
+      max_temp: rawRecord.max_temp,
+      min_temp: rawRecord.min_temp,
+      icon: `https://www.weatherbit.io/static/img/icons/${rawRecord.weather.icon}.png`,
+      description: rawRecord.weather.description,
+    };
   };
+  return rawForecast?.data?.map(buildCompactDailyForecast) ?? [];
 };
 
 const buildImageData = function(rawImageData) {
-  return {
-    url: 'unavailable',
-    width: 0,
-    height: 0,
-    user: 'unknown user',
-    // dummy image with unknown pic
-  };
+  const firstHit = rawImageData?.hits[0];
+  if (firstHit) {
+    return {
+      url: firstHit.webformatURL,
+      width: firstHit.webformatWidth,
+      height: firstHit.webformatHeight,
+      user: firstHit.user,
+    };
+  }
+  return {};
 };
 
 export {
   calculateDurationDays,
   buildForecastData,
+  buildImageData,
   buildTripData,
 };
