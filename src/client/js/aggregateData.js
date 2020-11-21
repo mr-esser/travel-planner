@@ -7,10 +7,10 @@ const buildTripData = async function(
     rawWeatherData,
     rawImageData) {
   const tripData = {
-    city: city ?? 'unavailable',
-    country: country ?? 'unavailable',
-    departureDate: departureDate,
-    returnDate: returnDate,
+    city: city ?? '',
+    country: country ?? '',
+    departureDate: departureDate ?? '',
+    returnDate: returnDate ?? '',
     duration: calculateDurationDays(departureDate, returnDate),
     forecasts: buildForecastData(rawWeatherData),
     image: buildImageData(rawImageData),
@@ -18,11 +18,14 @@ const buildTripData = async function(
   return tripData;
 };
 
-const calculateDurationDays = function(startDate, endDate) {
-  if (startDate === null || startDate === undefined ||
-      endDate === null || endDate === undefined) {
-    return 'unavailable';
+const calculateDurationDays = function(start, end) {
+  const startMillis = Date.parse(start);
+  const endMillis = Date.parse(end);
+  if (Number.isNaN(startMillis) || Number.isNaN(endMillis)) {
+    return 0;
   }
+  const startDate = new Date(startMillis);
+  const endDate = new Date(endMillis);
   startDate.setHours(0, 0, 0, 0);
   endDate.setHours(0, 0, 0, 0);
   const diffMillis = (endDate - startDate);
@@ -46,7 +49,7 @@ const buildForecastData = function(rawForecast) {
 };
 
 const buildImageData = function(rawImageData) {
-  const firstHit = rawImageData?.hits[0];
+  const firstHit = rawImageData?.hits?.reverse()?.pop();
   if (firstHit) {
     return {
       url: firstHit.webformatURL,
