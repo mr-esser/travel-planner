@@ -4,13 +4,6 @@
 const SERVER = 'localhost';
 const PORT = 8080;
 
-/* Public helper functions */
-// Today's date printed in an unambiguous format (e.g.: 'Thu Jan 01 1970').
-// App could be up for a long time, so not making this a constant.
-const createDisplayDate = function() {
-  return new Date().toDateString();
-};
-
 const getServiceUrl = function(route = '') {
   return `http://${SERVER}:${PORT}/${route}`;
 };
