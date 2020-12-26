@@ -9,12 +9,12 @@ const {ValidationError} =
 describe(`'getGeoServiceUrl' should`, () => {
   test(`return a well-formed URL if all args are present`, () => {
     const url = getGeoServiceUrl('Berlin', 'DE', 'http://api.geonames.org/search', 'humptydumpty');
-    expect(url.toString()).toEqual('http://api.geonames.org/search?username=humptydumpty&lang=EN&maxRows=1&style=short&name=Berlin&country=DE');
+    expect(url.toString()).toEqual('http://api.geonames.org/search?type=json&username=humptydumpty&lang=EN&maxRows=1&style=short&name=Berlin&country=DE');
   });
 
   test(`return a well-formed URL as long as base URL is a valid URL`, () => {
     const url = getGeoServiceUrl(undefined, undefined, 'http://api.geonames.org/search', ''/* prevent fallback*/);
-    expect(url.toString()).toEqual('http://api.geonames.org/search?username=&lang=EN&maxRows=1&style=short&name=&country=');
+    expect(url.toString()).toEqual('http://api.geonames.org/search?type=json&username=&lang=EN&maxRows=1&style=short&name=&country=');
   });
 
   test(`throw an error if base URL is not a valid URL`, () => {
@@ -146,6 +146,7 @@ describe(`'fetchGeoData' should`, () => {
 
     const mockFnCheck = jest.fn();
     const mockFnGetServiceUrl = jest.fn();
+    mockFnGetServiceUrl.mockReturnValue();
     const mockError = new Error('Service unavailable');
     fetch.mockRejectedValue(mockError);
     try {

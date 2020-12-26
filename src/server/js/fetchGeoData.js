@@ -12,7 +12,7 @@ const fetchGeoData = async function(
   check(city, countryCode);
 
   const serviceUrl = getServiceUrl(city, countryCode);
-  console.debug(serviceUrl);
+  console.debug(serviceUrl?.toString());
 
   // Note(!): fetch will only reject on network errors!
   const serviceResponse = await fetch(serviceUrl);
@@ -54,6 +54,7 @@ const getGeoServiceUrl = function(
     apiUsername = process.env.GEO_USERNAME,
 ) {
   const url = new URL(baseUrl);
+  url.searchParams.append('type', 'json');
   url.searchParams.append('username', apiUsername);
   url.searchParams.append('lang', 'EN');
   url.searchParams.append('maxRows', 1);
