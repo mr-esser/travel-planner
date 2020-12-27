@@ -1,10 +1,9 @@
-/* Import base functionality */
 const {fetchWeatherData} = require('./fetchWeatherData');
 const {fetchGeoData} = require('./fetchGeoData');
 const {fetchImageData} = require('./fetchImageData');
+const express = require('express');
 
 /* Basic express configuration */
-const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended: false}));
@@ -13,24 +12,23 @@ const cors = require('cors');
 app.use(cors());
 app.use(express.static('dist'));
 
-// Accumulated trips
+/* Accumulated trips */
 let nextId = 0;
-const travelData = new Map();
+const allTrips = new Map();
 
-const store = function(tripData) {
-  const dataWithId = {id: nextId.toString(), ...tripData};
-  travelData.set(dataWithId.id, dataWithId);
+const storeTrip = function(tripData) {
+  const trip = {id: nextId.toString(), ...tripData};
+  allTrips.set(trip.id, trip);
   nextId++;
-  return dataWithId;
+  return trip;
 };
 
-const clear = function() {
+const resetTripData = function() {
   nextId = 0;
-  travelData.clear();
+  allTrips.clear();
 };
 
 /* Routing */
-
 /* Log all incoming requests for debugging purposes */
 // TODO: Add proper, configurable logging library
 app.all('*', function(req, res, next) {
@@ -38,20 +36,21 @@ app.all('*', function(req, res, next) {
   next();
 });
 
-/* Never actually gets called, unless there is no
- * index.html in dist (static root). */
+/* Never actually gets called,
+ * unless there is no 'index.html' in dist (static root). */
 app.get('/', function(req, res) {
   res.send('Hello from travel planner!');
 });
 
-/* Note(!): Route param must be marked as optional
- * to make routing behave as expected here. */
-app.get('/trips/:tripId?', function(req, res) {
-  const tripId = req.params.tripId;
+/* Note(!): Route param is marked as optional here,
+ * to allow requests requests like '/trips' and 'trips/0'
+ * at the same time. */
+app.get('/trips/:id?', function(req, res) {
+  const tripId = req.params.id;
   if (!tripId) {
-    res.status(200).json(Array.from(travelData.values()));
+    res.status(200).json(Array.from(allTrips.values()));
   } else {
-    const tripData = travelData.get(tripId);
+    const tripData = allTrips.get(tripId);
     if (!tripData) {
       res.sendStatus(404);
     } else {
@@ -59,10 +58,6 @@ app.get('/trips/:tripId?', function(req, res) {
     }
   }
 });
-
-// app.get('/trips', function(req, res) {
-//   res.status(200).json(Array.from(travelData.values()));
-// });
 
 app.get('/geodata', async function(req, res, next) {
   try {
@@ -93,8 +88,8 @@ app.get('/imagedata', async function(req, res, next) {
     next(error);
   }
 });
-/* POST route to store an entry
- * Note(!): Deliberately not performing any validation here.
+
+/* Note(!): Deliberately not performing any validation here.
  * App serves as a general data store. Data validation is
  * the client's responsibility. */
 app.post('/trips', function(req, res) {
@@ -102,7 +97,7 @@ app.post('/trips', function(req, res) {
   if (Object.keys(tripData).length == 0) {
     res.status(400).send('No trip data provided!');
   } else {
-    const responseData = store(tripData);
+    const responseData = storeTrip(tripData);
     const fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
     res.status(201)
         .setHeader('Location', fullUrl + '/' + responseData.id)
@@ -111,5 +106,5 @@ app.post('/trips', function(req, res) {
 });
 
 module.exports = {
-  app, clear,
+  app, resetTripData,
 };

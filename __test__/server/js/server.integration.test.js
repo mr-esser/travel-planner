@@ -12,12 +12,6 @@
 const request = require('supertest');
 const {app} = require('../../../src/server/js/server');
 
-test('GET / should yield 200', () => {
-  return/* ! */ request(app)
-      .get('/')
-      .expect(200);
-});
-
 // TODO: Reduce duplication with table
 describe('GET on /geodata', () => {
   test(`should yield one geo record given valid params`,

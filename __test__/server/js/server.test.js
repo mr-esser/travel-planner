@@ -1,17 +1,17 @@
-const {app, clear} =
- require('./../../../src/server/js/server');
-
 const request = require('supertest');
 const http = require('http');
+const {app, resetTripData} =
+ require('./../../../src/server/js/server');
 
 test('GET / should yield 200', () => {
-  clear();
+  resetTripData();
   return/* ! */ request(app)
       .get('/')
       .expect(200);
 });
 
 test('Given no trips GET /trips should yield empty array', () => {
+  resetTripData();
   return/* ! */ request(app)
       .get('/trips')
       .expect(200)
@@ -21,6 +21,7 @@ test('Given no trips GET /trips should yield empty array', () => {
 });
 
 test('POST /trips should yield 400 when request body is empty', () => {
+  resetTripData();
   return/* ! */ request(app)
       .post('/trips')
       .expect(400)
@@ -33,7 +34,7 @@ test('POST /trips should yield 400 when request body is empty', () => {
 
 test('POST /trips should yield new entry given valid trip data'
     , async () => {
-      clear();
+      resetTripData();
       const server = http.createServer(app).listen(8080);
       try {
         await request(server).post('/trips')
@@ -52,7 +53,7 @@ test('POST /trips should yield new entry given valid trip data'
 
 test('POST /trips should sucessfully store data for multiple trips',
     async () => {
-      clear();
+      resetTripData();
       const server = http.createServer(app).listen(8081);
       try {
         await request(server).post('/trips')
@@ -87,7 +88,7 @@ test('POST /trips should sucessfully store data for multiple trips',
 
 test('GET /trips/:tripId should return existing trip data',
     async () => {
-      clear();
+      resetTripData();
       const server = http.createServer(app).listen(8082);
       try {
         await request(server).post('/trips')
