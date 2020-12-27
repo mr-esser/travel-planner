@@ -13,9 +13,21 @@ const cors = require('cors');
 app.use(cors());
 app.use(express.static('dist'));
 
-// Accumulated travel data
-// TODO: Use list-based structure here. Maybe even with IDs.
-let projectData = {};
+// Accumulated trips
+let nextId = 0;
+const travelData = new Map();
+
+const store = function(tripData) {
+  const dataWithId = {id: nextId.toString(), ...tripData};
+  travelData.set(dataWithId.id, dataWithId);
+  nextId++;
+  return dataWithId;
+};
+
+const clear = function() {
+  nextId = 0;
+  travelData.clear();
+};
 
 /* Routing */
 
@@ -32,9 +44,25 @@ app.get('/', function(req, res) {
   res.send('Hello from travel planner!');
 });
 
-app.get('/all', function(req, res) {
-  res.json(projectData);
+/* Note(!): Route param must be marked as optional
+ * to make routing behave as expected here. */
+app.get('/trips/:tripId?', function(req, res) {
+  const tripId = req.params.tripId;
+  if (!tripId) {
+    res.status(200).json(Array.from(travelData.values()));
+  } else {
+    const tripData = travelData.get(tripId);
+    if (!tripData) {
+      res.sendStatus(404);
+    } else {
+      res.status(200).set('Content-Type', 'application/json').send(tripData);
+    }
+  }
 });
+
+// app.get('/trips', function(req, res) {
+//   res.status(200).json(Array.from(travelData.values()));
+// });
 
 app.get('/geodata', async function(req, res, next) {
   try {
@@ -69,9 +97,19 @@ app.get('/imagedata', async function(req, res, next) {
  * Note(!): Deliberately not performing any validation here.
  * App serves as a general data store. Data validation is
  * the client's responsibility. */
-app.post('/all', function(req, res) {
-  projectData = req.body;
-  res.status(201).json(projectData);
+app.post('/trips', function(req, res) {
+  const tripData = req.body;
+  if (Object.keys(tripData).length == 0) {
+    res.status(400).send('No trip data provided!');
+  } else {
+    const responseData = store(tripData);
+    const fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+    res.status(201)
+        .setHeader('Location', fullUrl + '/' + responseData.id)
+        .json(responseData);
+  }
 });
 
-module.exports = app;
+module.exports = {
+  app, clear,
+};

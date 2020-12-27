@@ -10,10 +10,10 @@
 */
 
 const request = require('supertest');
-const server = require('../../../src/server/js/server');
+const {app} = require('../../../src/server/js/server');
 
 test('GET / should yield 200', () => {
-  return/* ! */ request(server)
+  return/* ! */ request(app)
       .get('/')
       .expect(200);
 });
@@ -22,7 +22,7 @@ test('GET / should yield 200', () => {
 describe('GET on /geodata', () => {
   test(`should yield one geo record given valid params`,
       () => {
-        return/* ! */ request(server)
+        return/* ! */ request(app)
             .get(`/geodata?city=Berlin&country=DE`)
             .expect('Content-Type', /json/)
             .expect(200).then((res) => {
@@ -37,7 +37,7 @@ describe('GET on /geodata', () => {
       },
   );
   test(`should fail with HTTP 400 given invalid param 'city'`, () => {
-    return/* ! */ request(server)
+    return/* ! */ request(app)
         .get('/geodata?city=')
         .expect(400)
         .expect('Content-Type', /text\/html/)
@@ -47,7 +47,7 @@ describe('GET on /geodata', () => {
         });
   });
   test(`should fail with HTTP 400 given invalid param 'country'`, () => {
-    return/* ! */ request(server)
+    return/* ! */ request(app)
         .get('/geodata?city=Berlin&country=DUCK')
         .expect(400)
         .expect('Content-Type', /text\/html/)
@@ -59,7 +59,7 @@ describe('GET on /geodata', () => {
         });
   });
   test(`should fail with HTTP 400 given no query`, () => {
-    return/* ! */ request(server)
+    return/* ! */ request(app)
         .get('/geodata')
         .expect(400)
         .expect('Content-Type', /text\/html/)
@@ -71,7 +71,7 @@ describe('GET on /geodata', () => {
 });
 describe('GET on /weather', () => {
   test(`should yield one geo record given valid params`, () => {
-    return/* ! */ request(server)
+    return/* ! */ request(app)
         .get('/weather?lat=52.52&long=13.41')
         .expect('Content-Type', /json/)
         .expect(200).then((res) => {
@@ -91,7 +91,7 @@ describe('GET on /weather', () => {
         });
   });
   test(`should fail with HTTP 400 given invalid param 'lat'`, () => {
-    return/* ! */ request(server)
+    return/* ! */ request(app)
         .get('/weather?lat=abc&long=44.3')
         .expect(400)
         .expect('Content-Type', /text\/html/)
@@ -101,7 +101,7 @@ describe('GET on /weather', () => {
         )));
   });
   test(`should fail with HTTP 400 given invalid param 'long'`, () => {
-    return/* ! */ request(server)
+    return/* ! */ request(app)
         .get('/weather?lat=44.3&long=bcd')
         .expect(400)
         .expect('Content-Type', /text\/html/)
@@ -111,7 +111,7 @@ describe('GET on /weather', () => {
         )));
   });
   test(`should fail with HTTP 400 given no query`, () => {
-    return/* ! */ request(server)
+    return/* ! */ request(app)
         .get('/weather')
         .expect(400)
         .expect('Content-Type', /text\/html/)
@@ -124,7 +124,7 @@ describe('GET on /weather', () => {
 
 describe('GET on /imagedata', () => {
   test(`should yield one usable image record given valid params`, () => {
-    return/* ! */ request(server)
+    return/* ! */ request(app)
         .get('/imagedata?loc=Berlin')
         .expect('Content-Type', /json/)
         .expect(200).then((res) => {
@@ -144,7 +144,7 @@ describe('GET on /imagedata', () => {
         });
   });
   test(`should fail with HTTP 400 given invalid param 'loc'`, () => {
-    return/* ! */ request(server)
+    return/* ! */ request(app)
         .get('/imagedata?loc=')
         .expect(400)
         .expect('Content-Type', /text\/html/)
@@ -153,7 +153,7 @@ describe('GET on /imagedata', () => {
         )));
   });
   test(`should fail with HTTP 400 given no query`, () => {
-    return/* ! */ request(server)
+    return/* ! */ request(app)
         .get('/imagedata')
         .expect(400)
         .expect('Content-Type', /text\/html/)
