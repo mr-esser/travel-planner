@@ -30,38 +30,6 @@ describe('GET on /geodata', () => {
             });
       },
   );
-  test(`should fail with HTTP 400 given invalid param 'city'`, () => {
-    return/* ! */ request(app)
-        .get('/geodata?city=')
-        .expect(400)
-        .expect('Content-Type', /text\/html/)
-        .then((res) => {
-          expect(res.text)
-              .toMatch(/Param &#39;city&#39; must not be empty<br>/);
-        });
-  });
-  test(`should fail with HTTP 400 given invalid param 'country'`, () => {
-    return/* ! */ request(app)
-        .get('/geodata?city=Berlin&country=DUCK')
-        .expect(400)
-        .expect('Content-Type', /text\/html/)
-        .then((res) => {
-          expect(res.text)
-              .toMatch(
-                  /Param &#39;country&#39; must be a two-letter-code<br>/,
-              );
-        });
-  });
-  test(`should fail with HTTP 400 given no query`, () => {
-    return/* ! */ request(app)
-        .get('/geodata')
-        .expect(400)
-        .expect('Content-Type', /text\/html/)
-        .then((res) => {
-          expect(res.text)
-              .toMatch(/Param &#39;city&#39; must not be empty<br>/);
-        });
-  });
 });
 describe('GET on /weather', () => {
   test(`should yield one geo record given valid params`, () => {
@@ -83,36 +51,6 @@ describe('GET on /weather', () => {
           expect(firstRecord.weather.code).toBeDefined();
           expect(firstRecord.weather.description).toBeDefined();
         });
-  });
-  test(`should fail with HTTP 400 given invalid param 'lat'`, () => {
-    return/* ! */ request(app)
-        .get('/weather?lat=abc&long=44.3')
-        .expect(400)
-        .expect('Content-Type', /text\/html/)
-        .then((res) => expect(res.text).toMatch(new RegExp(
-            'Params &#39;latitude&#39; and &#39;longitude&#39; ' +
-              'must both be numbers\<br\>',
-        )));
-  });
-  test(`should fail with HTTP 400 given invalid param 'long'`, () => {
-    return/* ! */ request(app)
-        .get('/weather?lat=44.3&long=bcd')
-        .expect(400)
-        .expect('Content-Type', /text\/html/)
-        .then((res) => expect(res.text).toMatch(new RegExp(
-            'Params &#39;latitude&#39; and &#39;longitude&#39; ' +
-                  'must both be numbers\<br\>',
-        )));
-  });
-  test(`should fail with HTTP 400 given no query`, () => {
-    return/* ! */ request(app)
-        .get('/weather')
-        .expect(400)
-        .expect('Content-Type', /text\/html/)
-        .then((res) => expect(res.text).toMatch(new RegExp(
-            'Params &#39;latitude&#39; and &#39;longitude&#39; ' +
-                  'must both be numbers\<br\>',
-        )));
   });
 });
 
@@ -136,24 +74,6 @@ describe('GET on /imagedata', () => {
           expect(firstRecord.webformatHeight).toBeDefined();
           expect(firstRecord.user).toBeDefined();
         });
-  });
-  test(`should fail with HTTP 400 given invalid param 'loc'`, () => {
-    return/* ! */ request(app)
-        .get('/imagedata?loc=')
-        .expect(400)
-        .expect('Content-Type', /text\/html/)
-        .then((res) => expect(res.text).toMatch(new RegExp(
-            'Param &#39;location&#39; must not be empty',
-        )));
-  });
-  test(`should fail with HTTP 400 given no query`, () => {
-    return/* ! */ request(app)
-        .get('/imagedata')
-        .expect(400)
-        .expect('Content-Type', /text\/html/)
-        .then((res) => expect(res.text).toMatch(new RegExp(
-            'Param &#39;location&#39; must not be empty',
-        )));
   });
   /* 500 is hard to provoke */
 });
