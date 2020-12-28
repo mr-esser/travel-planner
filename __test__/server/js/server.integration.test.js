@@ -12,7 +12,6 @@
 const request = require('supertest');
 const {app} = require('../../../src/server/js/server');
 
-// TODO: Reduce duplication with table
 describe('GET on /geodata', () => {
   test(`should yield one geo record given valid params`,
       () => {
@@ -31,8 +30,9 @@ describe('GET on /geodata', () => {
       },
   );
 });
+
 describe('GET on /weather', () => {
-  test(`should yield one geo record given valid params`, () => {
+  test(`should yield one forecast record given valid params`, () => {
     return/* ! */ request(app)
         .get('/weather?lat=52.52&long=13.41')
         .expect('Content-Type', /json/)
@@ -75,5 +75,4 @@ describe('GET on /imagedata', () => {
           expect(firstRecord.user).toBeDefined();
         });
   });
-  /* 500 is hard to provoke */
 });

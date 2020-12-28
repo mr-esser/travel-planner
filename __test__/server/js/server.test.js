@@ -12,11 +12,10 @@
 
 const request = require('supertest');
 const http = require('http');
-const {app, resetTripData} =
+const {app, clearTrips} =
  require('./../../../src/server/js/server');
 
 test('GET / should yield 200', () => {
-  resetTripData();
   return/* ! */ request(app)
       .get('/')
       .expect(200);
@@ -112,18 +111,21 @@ describe('GET on /imagedata should fail with 400', () => {
 });
 
 describe('Synchronize aggregated trip data with express server', () => {
-  test('Given no trips GET /trips should yield empty array', () => {
-    resetTripData();
+  beforeEach(() => {
+    clearTrips();
+  });
+
+  test('GET /trips should return empty array when server has no trips', () => {
     return/* ! */ request(app)
         .get('/trips')
         .expect(200)
+        .expect('Content-Type', 'application/json; charset=utf-8')
         .then((res) => {
           expect(res.body).toEqual([]);
         });
   });
 
-  test('POST /trips should yield 400 when request body is empty', () => {
-    resetTripData();
+  test('POST /trips should fail with 400 when request body is empty', () => {
     return/* ! */ request(app)
         .post('/trips')
         .expect(400)
@@ -134,9 +136,8 @@ describe('Synchronize aggregated trip data with express server', () => {
         });
   });
 
-  test('POST /trips should yield new entry given valid trip data'
+  test('POST /trips should return new record when request body has data'
       , async () => {
-        resetTripData();
         const server = http.createServer(app).listen(8080);
         try {
           await request(server).post('/trips')
@@ -155,27 +156,30 @@ describe('Synchronize aggregated trip data with express server', () => {
 
   test('POST /trips should sucessfully store data for multiple trips',
       async () => {
-        resetTripData();
         const server = http.createServer(app).listen(8081);
         try {
-          await request(server).post('/trips')
+          await request(app).post('/trips')
               .set('Content-Type', 'application/json')
               .send({data: 'test0'})
-              .expect(201);
+              .expect(201)
+              .expect('Content-Type', 'application/json; charset=utf-8');
           await request(server).post('/trips')
               .set('Content-Type', 'application/json')
               .send({data: 'test1'})
-              .expect(201);
+              .expect(201)
+              .expect('Content-Type', 'application/json; charset=utf-8');
           await request(server).post('/trips')
               .set('Content-Type', 'application/json')
               .send({data: 'test2'})
               .expect(201)
+              .expect('Content-Type', 'application/json; charset=utf-8')
               .then((res) =>
-                expect(res.body).toEqual({id: '2', data: 'test2'}),
+                expect(res.body).toEqual( {id: '2', data: 'test2'}),
               );
           return await request(server).get('/trips')
               .set('Accept', 'application/json')
               .expect(200)
+              .expect('Content-Type', 'application/json; charset=utf-8')
               .then((res) => {
                 expect(res.body).toEqual([
                   {id: '0', data: 'test0'},
@@ -188,9 +192,8 @@ describe('Synchronize aggregated trip data with express server', () => {
         }
       });
 
-  test('GET /trips/:tripId should return existing trip data',
+  test('GET /trips/:id should return stored trip data with given id',
       async () => {
-        resetTripData();
         const server = http.createServer(app).listen(8082);
         try {
           await request(server).post('/trips')
@@ -204,15 +207,33 @@ describe('Synchronize aggregated trip data with express server', () => {
           await request(server)
               .get('/trips/0')
               .expect(200)
+              .expect('Content-Type', 'application/json; charset=utf-8')
               .then( (res) => {
                 expect(res.body).toEqual( {id: '0', data: 'test0'});
               });
           return await request(server)
               .get('/trips/1')
               .expect(200)
+              .expect('Content-Type', 'application/json; charset=utf-8')
               .then( (res) => {
                 expect(res.body).toEqual( {id: '1', data: 'test1'});
               });
+        } finally {
+          server.close();
+        }
+      });
+
+  test('GET /trips/:id should fail with 404 if given id not found',
+      async () => {
+        const server = http.createServer(app).listen(8083);
+        try {
+          await request(server).post('/trips')
+              .set('Content-Type', 'application/json')
+              .send({data: 'test0'})
+              .expect(201);
+          await request(server)
+              .get('/trips/unknown')
+              .expect(404);
         } finally {
           server.close();
         }

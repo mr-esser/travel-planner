@@ -16,6 +16,9 @@ app.use(express.static('dist'));
 let nextId = 0;
 const allTrips = new Map();
 
+/* Store trips. Uses strings for trip ids to avoid having to
+ * parse ints from string and dealing with errors
+ * when looking up trips again. */
 const storeTrip = function(tripData) {
   const trip = {id: nextId.toString(), ...tripData};
   allTrips.set(trip.id, trip);
@@ -23,7 +26,7 @@ const storeTrip = function(tripData) {
   return trip;
 };
 
-const resetTripData = function() {
+const clearTrips = function() {
   nextId = 0;
   allTrips.clear();
 };
@@ -39,24 +42,7 @@ app.all('*', function(req, res, next) {
 /* Never actually gets called,
  * unless there is no 'index.html' in dist (static root). */
 app.get('/', function(req, res) {
-  res.send('Hello from travel planner!');
-});
-
-/* Note(!): Route param is marked as optional here,
- * to allow requests requests like '/trips' and 'trips/0'
- * at the same time. */
-app.get('/trips/:id?', function(req, res) {
-  const tripId = req.params.id;
-  if (!tripId) {
-    res.status(200).json(Array.from(allTrips.values()));
-  } else {
-    const tripData = allTrips.get(tripId);
-    if (!tripData) {
-      res.sendStatus(404);
-    } else {
-      res.status(200).set('Content-Type', 'application/json').send(tripData);
-    }
-  }
+  res.status(200).send('Hello from travel planner!');
 });
 
 app.get('/geodata', async function(req, res, next) {
@@ -89,22 +75,38 @@ app.get('/imagedata', async function(req, res, next) {
   }
 });
 
-/* Note(!): Deliberately not performing any validation here.
+/* Note(!): Route param (:id) is marked as optional (?) here
+ * so that requests like '/trips' and 'trips/0' are both processed
+ * by this endpoint. */
+app.get('/trips/:id?', function(req, res) {
+  const tripId = req.params.id;
+  if (!tripId) {
+    res.status(200).json(Array.from(allTrips.values()));
+  } else {
+    const trip = allTrips.get(tripId);
+    if (!trip) {
+      res.sendStatus(404);
+    } else {
+      res.status(200).json(trip);
+    }
+  }
+});
+
+/* Note(!): Deliberately not performing any sophisticated validation here.
  * App serves as a general data store. Data validation is
  * the client's responsibility. */
 app.post('/trips', function(req, res) {
   const tripData = req.body;
   if (Object.keys(tripData).length == 0) {
+    // TODO: Consider throwing a ValidationError here
     res.status(400).send('No trip data provided!');
   } else {
-    const responseData = storeTrip(tripData);
-    const fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-    res.status(201)
-        .setHeader('Location', fullUrl + '/' + responseData.id)
-        .json(responseData);
+    const trip = storeTrip(tripData);
+    const tripUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}/${trip.id}`;
+    res.status(201).setHeader('Location', tripUrl).json(trip);
   }
 });
 
 module.exports = {
-  app, resetTripData,
+  app, clearTrips,
 };
