@@ -1,41 +1,45 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Travel Planner</title>
-    <!-- TODO: Move to SCSS and import from there -->
-    <link
-      href="https://fonts.googleapis.com/css?family=Oswald:400,600,700|Ranga:400,700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <div id="app">
-      <div class="holder headline">Travel Planner</div>
-      <div class="holder zip">
-        <label for="zip">Enter Zipcode here</label>
-        <input type="text" id="zip" placeholder="enter zip code here" />
-      </div>
-      <div class="holder feel">
-        <label for="feelings">How are you feeling today?</label>
-        <textarea
-          class="myInput"
-          id="feelings"
-          placeholder="Enter your feelings here"
-          rows="9"
-          cols="50"
-        ></textarea>
-        <button id="generate" type="submit">Generate</button>
-      </div>
-      <div class="holder entry">
-        <div class="title">Most Recent Entry</div>
-        <div id="entryHolder">
-          <div id="date"></div>
-          <div id="location"></div>
-          <div id="temp"></div>
-          <div id="content"></div>
-        </div>
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Travel Planner</title>
+  <!-- TODO: Move to SCSS and import from there -->
+  <link href="https://fonts.googleapis.com/css?family=Oswald:400,600,700|Ranga:400,700&display=swap" rel="stylesheet" />
+</head>
+
+<body>
+  <div id="app">
+    <div class="holder headline">Travel Planner</div>
+    <div class="holder city">
+      <label for="city">Enter city here</label>
+      <input type="text" id="city" placeholder="Enter city here" />
+    </div>
+    <div class="holder country">
+      <label for="country">Enter country code here</label>
+      <input type="text" id="country" placeholder="Enter country code here" />
+    </div>
+    <div class="holder depart">
+      <label for="depart">Enter departure date here</label>
+      <input type="text" id="depart" placeholder="Enter departure date here" />
+    </div>
+    <div class="holder return">
+      <label for="return">Enter return date here</label>
+      <input type="text" id="return" placeholder="Enter return date here" />
+    </div>
+    <button id="generate" type="submit">Generate</button>
+    <div class="holder entry">
+      <div class="title">Your upcoming trips</div>
+      <div id="entryHolder">
+        <div id="depart-date"></div>
+        <div id="return-date"></div>
+        <div id="duration"></div>
+        <div id="location"></div>
+        <div id="pic"></div>
+        <div id="weather"></div>
       </div>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>
