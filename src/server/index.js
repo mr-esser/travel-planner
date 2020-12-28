@@ -1,4 +1,4 @@
-const server = require('./js/server');
+const {app: server} = require('./js/server');
 
 const PORT = 8080;
 server.listen(PORT, function() {
