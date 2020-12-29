@@ -2,16 +2,7 @@ import {fetchGeoData} from './fetchGeoData';
 import {fetchWeatherData} from './fetchWeatherData';
 import {fetchImageData} from './fetchImageData';
 import {buildTripData} from './aggregateData';
-// import {json} from 'body-parser';
-/* Global Variables */
-
-// Journal server info
-const SERVER = 'localhost';
-const PORT = 8080;
-
-const getServiceUrl = function(route = '') {
-  return `http://${SERVER}:${PORT}/${route}`;
-};
+import {postTripData} from './syncTripData';
 
 /* Will not validate the input! */
 const getInputText = function(selector) {
@@ -56,25 +47,6 @@ const updateUI = function({
 
 /* Main functions */
 
-/* Function to POST project data to sever */
-const postToServer = async function(url = '', objectData = {}) {
-  // Note(!): fetch will only reject on network errors!
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(objectData),
-  });
-  return response.json();
-};
-
-/* Function to GET project data from server */
-const getFromServer = async function(url = '') {
-  // Note(!): fetch will only reject on network errors!
-  const response = await fetch(url);
-  return response.json();
-};
 
 /* MAIN function called by event listener on 'Generate' button */
 const handleGenerate = async function handleGenerate(event) {
@@ -90,9 +62,6 @@ const handleGenerate = async function handleGenerate(event) {
       console.debug('departure: ' + depart);
       const ret = getInputText('#return');
       console.debug('return: ' + ret);
-
-      const geoUrl = getServiceUrl('geodata');
-      console.debug(geoUrl?.toString());
 
       // TODO: Run things in parallel!
       const geoData = await fetchGeoData(city, country);
@@ -112,16 +81,10 @@ const handleGenerate = async function handleGenerate(event) {
     return displayData;
   };
 
-  const synchronizeWithServer = async function(payload) {
-    const route = 'trips';
-    const received = await postToServer(getServiceUrl(route), payload);
-    if (false) getFromServer();
-    return received;
-  };
 
   try {
     const tripData = await buildDisplayData();
-    const serverRecord = await synchronizeWithServer(tripData);
+    const serverRecord = await postTripData(tripData);
     console.debug('Complete data: ' + JSON.stringify(serverRecord));
     updateUI(serverRecord);
   } catch (networkError) {
