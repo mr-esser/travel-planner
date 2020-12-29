@@ -1,3 +1,40 @@
+import {fetchGeoData} from './fetchGeoData';
+import {fetchWeatherData} from './fetchWeatherData';
+import {fetchImageData} from './fetchImageData';
+
+const collectTravelInfo = async function(
+    city,
+    country,
+    departureDate,
+    returnDate,
+    fetchGeo = fetchGeoData,
+    fetchWeather = fetchWeatherData,
+    fetchImage = fetchImageData,
+) {
+  let rawWeatherData;
+  let rawImageData;
+
+  try {
+  // TODO: Error handling
+    console.debug(`Fetching geo data for: ${city}, ${country}`);
+    const geoData = await fetchGeo(city, country);
+    const {lat, lng} = geoData.geonames[0];
+    // TODO: Run in parallel
+    console.debug(`Fetching forecast for: ${lat} and ${lng}`);
+    rawWeatherData = await fetchWeather(lat, lng);
+    console.debug(`Fetching image for: ${city} and ${country}`);
+    rawImageData = await fetchImage(city);
+  } catch (error) {
+    // Data is incomplete, but it can still be posted and displayed.
+    // So, log and then go on.
+    console.info(error);
+  }
+  const tripData = buildTripData(
+      city, country, departureDate, returnDate, rawWeatherData, rawImageData,
+  );
+  return tripData;
+};
+
 /* Aggregate the data gathered from external APIs */
 const buildTripData = async function(
     city,
@@ -6,7 +43,7 @@ const buildTripData = async function(
     returnDate,
     rawWeatherData,
     rawImageData) {
-  const tripData = {
+  return {
     city: city ?? '',
     country: country ?? '',
     departureDate: departureDate ?? '',
@@ -15,7 +52,6 @@ const buildTripData = async function(
     forecasts: buildForecastData(rawWeatherData),
     image: buildImageData(rawImageData),
   };
-  return tripData;
 };
 
 const calculateDurationDays = function(start, end) {
@@ -62,6 +98,7 @@ const buildImageData = function(rawImageData) {
 };
 
 export {
+  collectTravelInfo,
   calculateDurationDays,
   buildForecastData,
   buildImageData,

@@ -1,7 +1,4 @@
-import {fetchGeoData} from './fetchGeoData';
-import {fetchWeatherData} from './fetchWeatherData';
-import {fetchImageData} from './fetchImageData';
-import {buildTripData} from './aggregateData';
+import {collectTravelInfo} from './aggregateData';
 import {postTripData} from './syncTripData';
 
 /* Will not validate the input! */
@@ -50,43 +47,19 @@ const updateUI = function({
 
 /* MAIN function called by event listener on 'Generate' button */
 const handleGenerate = async function handleGenerate(event) {
-  const buildDisplayData = async function() {
-    let displayData = {};
-    try {
-      const city = getInputText('#city');
-      console.debug('city: ' + city);
-      const country = getInputText('#country');
-      console.debug('country: ' + country);
-      // Assuming that inputs have been validated by the UI
-      const depart = getInputText('#depart');
-      console.debug('departure: ' + depart);
-      const ret = getInputText('#return');
-      console.debug('return: ' + ret);
-
-      // TODO: Run things in parallel!
-      const geoData = await fetchGeoData(city, country);
-      const lng = geoData.geonames[0].lng;
-      const lat = geoData.geonames[0].lat;
-      console.debug(`fetch forecast for: ${lat} and ${lng}`);
-      const weatherData = await fetchWeatherData(lat, lng);
-      const imageData = await fetchImageData(city);
-      displayData =
-        buildTripData(city, country, depart, ret, weatherData, imageData);
-      // TODO: Temperature unit is hard-coded?
-    } catch (error) {
-      // Data is incomplete, but it can still be posted and displayed.
-      // So, log and then go on.
-      console.info(error);
-    }
-    return displayData;
-  };
-
-
+  // TODO: Reflect on error handling and possible improvements.
   try {
-    const tripData = await buildDisplayData();
-    const serverRecord = await postTripData(tripData);
-    console.debug('Complete data: ' + JSON.stringify(serverRecord));
-    updateUI(serverRecord);
+    // Assuming that all inputs have been validated by the UI
+    const formInput = {
+      city: getInputText('#city'),
+      country: getInputText('#country'),
+      departureDate: getInputText('#depart'),
+      returnDate: getInputText('#return'),
+    };
+    const trip = await collectTravelInfo(...formInput);
+    const tripRecord = await postTripData(trip);
+    console.debug('Complete data: ' + JSON.stringify(tripRecord));
+    updateUI(tripRecord);
   } catch (networkError) {
     // Probably unrecoverable networking error ,i.e.: fetch rejected and threw
     console.error(networkError);
