@@ -288,17 +288,35 @@ describe(`Function 'buildTripData'`, () => {
 });
 
 describe(`Function 'collectTravelInfo'`, () => {
+  let mockGeoData;
+  let mockFnFetchGeoData;
+  let mockFnFetchWeatherData;
+  let mockFnFetchImageData;
+  let mockFetchError;
+  let expectedTripData;
+
+  beforeEach(() => {
+    mockGeoData = {geonames: [{lat: 44, lng: 33}]};
+    mockFnFetchGeoData = jest.fn().mockResolvedValue(mockGeoData);
+    mockFnFetchWeatherData = jest.fn().mockResolvedValue({});
+    mockFnFetchImageData = jest.fn().mockResolvedValue({});
+    mockFetchError = new Error('Fetching data failed!');
+    expectedTripData = {
+      city: 'Berlin',
+      country: 'DE',
+      departureDate: '2020-12-30',
+      duration: 2,
+      forecasts: [],
+      image: {},
+      returnDate: '2020-12-31',
+    };
+  });
+
   test('should be exported from its module', () => {
     expect(collectTravelInfo).toBeDefined();
   });
 
   test('should return a trip when all fetch calls succeed', async () => {
-    const mockGeoData = {geonames: [{lat: 44, lng: 33}]};
-    const mockFnFetchGeoData = jest.fn().mockResolvedValue(mockGeoData);
-    const mockWeatherData = {};
-    const mockFnFetchWeatherData = jest.fn().mockResolvedValue(mockWeatherData);
-    const mockImageData = {};
-    const mockFnFetchImageData = jest.fn().mockResolvedValue(mockImageData);
     const tripData = await collectTravelInfo(
         'Berlin', 'DE', '2020-12-30', '2020-12-31',
         mockFnFetchGeoData, mockFnFetchWeatherData, mockFnFetchImageData,
@@ -306,27 +324,21 @@ describe(`Function 'collectTravelInfo'`, () => {
     expect(mockFnFetchGeoData).toBeCalledTimes(1);
     expect(mockFnFetchGeoData.mock.calls[0][0]).toBe('Berlin');
     expect(mockFnFetchGeoData.mock.calls[0][1]).toBe('DE');
+    expect(mockFnFetchGeoData).toReturnWith(
+        Promise.resolve({geonames: [{lat: 44, lng: 33}]}),
+    );
     expect(mockFnFetchWeatherData).toBeCalledTimes(1);
     expect(mockFnFetchWeatherData.mock.calls[0][0]).toBe(44);
     expect(mockFnFetchWeatherData.mock.calls[0][1]).toBe(33);
+    expect(mockFnFetchGeoData).toReturnWith(Promise.resolve({}));
     expect(mockFnFetchImageData).toBeCalledTimes(1);
     expect(mockFnFetchImageData.mock.calls[0][0]).toBe('Berlin');
-    expect(tripData).toEqual({
-      city: 'Berlin',
-      country: 'DE',
-      departureDate: '2020-12-30',
-      duration: 2,
-      forecasts: [],
-      image: {},
-      returnDate: '2020-12-31',
-    });
+    expect(mockFnFetchGeoData).toReturnWith(Promise.resolve({}));
+    expect(tripData).toEqual(expectedTripData);
   });
 
   test('should return a trip when fetch geo data throws', async () => {
-    const mockError = new Error('Fetching geo data failed!');
-    const mockFnFetchGeoData = jest.fn().mockRejectedValue(mockError);
-    const mockFnFetchWeatherData = jest.fn().mockResolvedValue({});
-    const mockFnFetchImageData = jest.fn().mockResolvedValue({});
+    mockFnFetchGeoData = jest.fn().mockRejectedValue(mockFetchError);
     const tripData = await collectTravelInfo(
         'Berlin', 'DE', '2020-12-30', '2020-12-31',
         mockFnFetchGeoData, mockFnFetchWeatherData, mockFnFetchImageData,
@@ -334,23 +346,11 @@ describe(`Function 'collectTravelInfo'`, () => {
     expect(mockFnFetchGeoData).toBeCalledTimes(1);
     expect(mockFnFetchWeatherData).toBeCalledTimes(0);
     expect(mockFnFetchImageData).toBeCalledTimes(0);
-    expect(tripData).toEqual({
-      city: 'Berlin',
-      country: 'DE',
-      departureDate: '2020-12-30',
-      duration: 2,
-      forecasts: [],
-      image: {},
-      returnDate: '2020-12-31',
-    });
+    expect(tripData).toEqual(expectedTripData);
   });
 
   test('should return a trip when fetch weather data throws', async () => {
-    const mockGeoData = {geonames: [{lat: 44, lng: 33}]};
-    const mockFnFetchGeoData = jest.fn().mockResolvedValue(mockGeoData);
-    const mockError = new Error('Fetching weather data failed!');
-    const mockFnFetchWeatherData = jest.fn().mockRejectedValue(mockError);
-    const mockFnFetchImageData = jest.fn().mockResolvedValue({});
+    mockFnFetchWeatherData = jest.fn().mockRejectedValue(mockFetchError);
     const tripData = await collectTravelInfo(
         'Berlin', 'DE', '2020-12-30', '2020-12-31',
         mockFnFetchGeoData, mockFnFetchWeatherData, mockFnFetchImageData,
@@ -358,23 +358,11 @@ describe(`Function 'collectTravelInfo'`, () => {
     expect(mockFnFetchGeoData).toBeCalledTimes(1);
     expect(mockFnFetchWeatherData).toBeCalledTimes(1);
     expect(mockFnFetchImageData).toBeCalledTimes(0);
-    expect(tripData).toEqual({
-      city: 'Berlin',
-      country: 'DE',
-      departureDate: '2020-12-30',
-      duration: 2,
-      forecasts: [],
-      image: {},
-      returnDate: '2020-12-31',
-    });
+    expect(tripData).toEqual(expectedTripData);
   });
 
   test('should return a trip when fetch image data throws', async () => {
-    const mockGeoData = {geonames: [{lat: 44, lng: 33}]};
-    const mockFnFetchGeoData = jest.fn().mockResolvedValue(mockGeoData);
-    const mockFnFetchWeatherData = jest.fn().mockResolvedValue({});
-    const mockError = new Error('Fetching image data failed!');
-    const mockFnFetchImageData = jest.fn().mockRejectedValue(mockError);
+    mockFnFetchImageData = jest.fn().mockRejectedValue(mockFetchError);
     const tripData = await collectTravelInfo(
         'Berlin', 'DE', '2020-12-30', '2020-12-31',
         mockFnFetchGeoData, mockFnFetchWeatherData, mockFnFetchImageData,
@@ -382,14 +370,6 @@ describe(`Function 'collectTravelInfo'`, () => {
     expect(mockFnFetchGeoData).toBeCalledTimes(1);
     expect(mockFnFetchWeatherData).toBeCalledTimes(1);
     expect(mockFnFetchImageData).toBeCalledTimes(1);
-    expect(tripData).toEqual({
-      city: 'Berlin',
-      country: 'DE',
-      departureDate: '2020-12-30',
-      duration: 2,
-      forecasts: [],
-      image: {},
-      returnDate: '2020-12-31',
-    });
+    expect(tripData).toEqual(expectedTripData);
   });
 });
