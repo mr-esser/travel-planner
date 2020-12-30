@@ -50,13 +50,12 @@ const handleGenerate = async function handleGenerate(event) {
   // TODO: Reflect on error handling and possible improvements.
   try {
     // Assuming that all inputs have been validated by the UI
-    const formInput = {
-      city: getInputText('#city'),
-      country: getInputText('#country'),
-      departureDate: getInputText('#depart'),
-      returnDate: getInputText('#return'),
-    };
-    const trip = await collectTravelInfo(...formInput);
+    const city= getInputText('#city');
+    const country= getInputText('#country');
+    const departureDate= getInputText('#depart');
+    const returnDate= getInputText('#return');
+    const trip =
+      await collectTravelInfo(city, country, departureDate, returnDate);
     const tripRecord = await postTripData(trip);
     console.debug('Complete data: ' + JSON.stringify(tripRecord));
     updateUI(tripRecord);
