@@ -3,41 +3,56 @@
 
 <head>
   <meta charset="UTF-8" />
+  <meta name="author" content="Martin Esser" />
+  <meta name="description" content="A simple travel plannder" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Travel Planner</title>
   <!-- TODO: Move to SCSS and import from there -->
-  <link href="https://fonts.googleapis.com/css?family=Oswald:400,600,700|Ranga:400,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
 </head>
 
 <body>
-  <div id="app">
-    <div class="holder headline">Travel Planner</div>
-    <div class="holder city">
-      <label for="city">Enter city here</label>
-      <input type="text" id="city" placeholder="Enter city here" />
-    </div>
-    <div class="holder country">
-      <label for="country">Enter country code here</label>
-      <input type="text" id="country" placeholder="Enter country code here" />
-    </div>
-    <div class="holder depart">
-      <label for="depart">Enter departure date here</label>
-      <input type="text" id="depart" placeholder="Enter departure date here" />
-    </div>
-    <div class="holder return">
-      <label for="return">Enter return date here</label>
-      <input type="text" id="return" placeholder="Enter return date here" />
-    </div>
-    <button id="generate" type="submit">Generate</button>
-    <div class="holder entry">
-      <div class="title">Your upcoming trips</div>
-      <div id="entryHolder">
-        <div id="depart-date"></div>
-        <div id="return-date"></div>
-        <div id="duration"></div>
-        <div id="location"></div>
-        <div id="pic"></div>
-        <div id="weather"></div>
-      </div>
+  <section class="container">
+    <header>
+      <h1>Travel Planner</h1>
+    </header>
+    <div class="row">
+      <figure class="column">
+        <img src="./../media/berlin-cathedral-640.jpg" alt="Berlin Cathedral" />
+      </figure>
+      <form class="column">
+        <div class="row">
+          <label class="column label-inline" for="city">Destination</label>
+          <input class="column" type="text" id="city" placeholder="City" />
+        </div>
+        <div class="row">
+          <label class="column label-inline" for="country">Country</label>
+          <input class="column" type="text" id="country" placeholder="Country" />
+        </div>
+        <div class="row">
+          <label class="column label-inline" for="depart">Departing</label>
+          <input class="column" type="date" id="depart" placeholder="YYYY-MM-DD" />
+        </div>
+        <div class="row">
+          <label class="column label-inline" for="return">Returning</label>
+          <input class="column" type="date" id="return" placeholder="YYYY-MM-DD" />
+        </div>
+        <!-- TODO: Suppress events-->
+        <div class="row">
+          <button id="generate" class="column button button-outline" type="button">Save</button>
+          <button id="btn-remove" class="column button button-outline" disabled type="button">Remove</button>
+        </div>
+      </form>
+  </section>
+  <div class="holder entry">
+    <div class="title">Your upcoming trips</div>
+    <div id="entryHolder">
+      <div id="depart-date"></div>
+      <div id="return-date"></div>
+      <div id="duration"></div>
+      <div id="location"></div>
+      <div id="pic"></div>
+      <div id="weather"></div>
     </div>
   </div>
 </body>
