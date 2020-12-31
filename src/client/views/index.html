@@ -12,97 +12,83 @@
 </head>
 
 <body>
-  <section class="container">
-    <header class="row">
-      <h1>Travel Planner</h1>
-    </header>
-    <div class="row">
-      <figure class="column">
-        <img src="./../media/luggage-640.jpg" alt="Berlin Cathedral" />
-      </figure>
-      <div class="column">
-        <form>
-          <div class="row">
-            <label class="column label-inline" for="city">Destination</label>
-            <input class="column" type="text" id="city" placeholder="City" />
-          </div>
-          <div class="row">
-            <label class="column label-inline" for="country">Country</label>
-            <input class="column" type="text" id="country" placeholder="Country" />
-          </div>
-          <div class="row">
-            <label class="column label-inline" for="depart">Departing</label>
-            <input class="column" type="text" id="depart" placeholder="YYYY-MM-DD" />
-          </div>
-          <div class="row">
-            <label class="column label-inline" for="return">Returning</label>
-            <input class="column" type="text" id="return" placeholder="YYYY-MM-DD" />
-          </div>
-          <!-- TODO: Suppress events-->
-          <div class="row">
-            <button id="generate" class="column button button-outline" type="button">Save</button>
-            <button id="btn-remove" class="column button button-outline" disabled type="button">Remove</button>
-          </div>
-        </form>
-        <div class="row">
-          <p>
-            <!-- TODO: Add styles (before/after to preserve WS)-->
-            Your trip is <span id="countdown"> 1 </span> days away and
-            will last <span id="duration"> 1 </span> days.
-          </p>
+  <section>
+    <div class="container">
+      <header>
+        <h1>Travel Planner</h1>
+      </header>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="column">
+          <figure class="figure-main">
+            <img src="./../media/luggage-640.jpg" alt="Berlin Cathedral" />
+          </figure>
         </div>
-        <div class="row forecasts">
-          <div class="column forecast">
-            <span class="row date">2020-31-12</span>
-            <div class="row info">
-              <figure class="column icon">
-                <img src="https://www.weatherbit.io/static/img/icons/c02d.png">
-              </figure>
-              <div class="column temp">
-                <span class="row temp-high">20°C</span>
-                <span class="row temp-low">10°C</span>
+        <div class="column">
+          <form>
+            <div class="row">
+              <div class="column column-25 column-center">
+                <label for="city">Destination</label>
+              </div>
+              <div class="column column-bottom">
+                <input type="text" id="city" placeholder="City" />
               </div>
             </div>
-            <span class="row description"> Cloudy with showers</span>
+            <div class="row">
+              <div class="column column-25 column-center">
+                <label for="country">Country</label>
+              </div>
+              <div class="column column-bottom">
+                <input type="text" id="country" placeholder="Country" />
+              </div>
+            </div>
+            <div class="row">
+              <div class="column column-25 column-center">
+                <label for="depart">Departing</label>
+              </div>
+              <div class="column column-bottom">
+                <input type="text" id="depart" placeholder="YYYY-MM-DD" />
+              </div>
+            </div>
+            <div class="row">
+              <div class="column column-25 column-center">
+                <label for="return">Returning</label>
+              </div>
+              <div class="column column-bottom">
+                <input type="text" id="return" placeholder="YYYY-MM-DD" />
+              </div>
+            </div>
+            <!-- TODO: Suppress events-->
+            <div class="row">
+              <button id="generate" class="column button button-outline" type="button">Save</button>
+              <button id="btn-remove" class="column button button-outline" disabled type="button">Remove</button>
+            </div>
+          </form>
+          <div class="row">
+            <p>
+              <!-- TODO: Add styles (before/after to preserve WS)-->
+              Your trip to CITY, COUNTRY from YYYY-MM-DD to YYYY-MM-DD is N days away and will last M days
+            </p>
           </div>
-          <div class="column forecast">
-            <span class="row date">2021-01-01</span>
-            <div class="row info">
-              <figure class="column icon">
-                <img src="https://www.weatherbit.io/static/img/icons/c02d.png">
-              </figure>
-              <div class="column temp">
-                <span class="row temp-high">20°C</span>
-                <span class="row temp-low">10°C</span>
+          <div class="row container">
+            <div class="column column-25 forecast">
+              <div class="row row-stretch date">2020-31-12</div>
+              <div class="row info">
+                <div class="column">
+                  <figure class="icon">
+                    <img src="https://www.weatherbit.io/static/img/icons/c02d.png">
+                  </figure>
+                </div>
+                <div class="column temp">
+                  <span class="row temp-high">20°C</span>
+                  <span class="row temp-low">10°C</span>
+                </div>
+              </div>
+              <div class="row">
+                <span class="description"> Cloudy with showers</span>
               </div>
             </div>
-            <span class="row description"> Cloudy with showers</span>
-          </div>
-          <div class="column forecast">
-            <span class="row date">2021-01-02</span>
-            <div class="row info">
-              <figure class="column icon">
-                <img src="https://www.weatherbit.io/static/img/icons/c02d.png">
-              </figure>
-              <div class="column temp">
-                <span class="row temp-high">20°C</span>
-                <span class="row temp-low">10°C</span>
-              </div>
-            </div>
-            <span class="row description"> Cloudy with showers</span>
-          </div>
-          <div class="column forecast">
-            <span class="row date">2021-01-02</span>
-            <div class="row info">
-              <figure class="column icon">
-                <img src="https://www.weatherbit.io/static/img/icons/c02d.png">
-              </figure>
-              <div class="column temp">
-                <span class="row temp-high">20°C</span>
-                <span class="row temp-low">10°C</span>
-              </div>
-            </div>
-            <span class="row description"> Cloudy with showers</span>
           </div>
         </div>
       </div>
