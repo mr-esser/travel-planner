@@ -18,7 +18,7 @@
     </header>
     <div class="row">
       <figure class="column">
-        <img src="./../media/luggage-640.jpg" alt="Berlin Cathedral" />
+        <img id="city-img" src="./../media/luggage-640.jpg" alt="Berlin Cathedral" />
       </figure>
       <div class="column">
         <form>
@@ -32,7 +32,7 @@
           </div>
           <div class="row">
             <label class="column label-inline" for="depart">Departing</label>
-            <input class="column" type="text" id="depart" placeholder="YYYY-MM-DD" />
+            <input class="column" type="text" id="departure" placeholder="YYYY-MM-DD" />
           </div>
           <div class="row">
             <label class="column label-inline" for="return">Returning</label>
@@ -44,66 +44,9 @@
             <button id="btn-remove" class="column button button-outline" disabled type="button">Remove</button>
           </div>
         </form>
-        <div class="row">
-          <p>
-            <!-- TODO: Add styles (before/after to preserve WS)-->
-            Your trip is <span id="countdown"> 1 </span> days away and
-            will last <span id="duration"> 1 </span> days.
-          </p>
+        <div id="trip" class="row">
         </div>
-        <div class="row forecasts">
-          <div class="column forecast">
-            <span class="row date">2020-31-12</span>
-            <div class="row info">
-              <figure class="column icon">
-                <img src="https://www.weatherbit.io/static/img/icons/c02d.png">
-              </figure>
-              <div class="column temp">
-                <span class="row temp-high">20°C</span>
-                <span class="row temp-low">10°C</span>
-              </div>
-            </div>
-            <span class="row description"> Cloudy with showers</span>
-          </div>
-          <div class="column forecast">
-            <span class="row date">2021-01-01</span>
-            <div class="row info">
-              <figure class="column icon">
-                <img src="https://www.weatherbit.io/static/img/icons/c02d.png">
-              </figure>
-              <div class="column temp">
-                <span class="row temp-high">20°C</span>
-                <span class="row temp-low">10°C</span>
-              </div>
-            </div>
-            <span class="row description"> Cloudy with showers</span>
-          </div>
-          <div class="column forecast">
-            <span class="row date">2021-01-02</span>
-            <div class="row info">
-              <figure class="column icon">
-                <img src="https://www.weatherbit.io/static/img/icons/c02d.png">
-              </figure>
-              <div class="column temp">
-                <span class="row temp-high">20°C</span>
-                <span class="row temp-low">10°C</span>
-              </div>
-            </div>
-            <span class="row description"> Cloudy with showers</span>
-          </div>
-          <div class="column forecast">
-            <span class="row date">2021-01-02</span>
-            <div class="row info">
-              <figure class="column icon">
-                <img src="https://www.weatherbit.io/static/img/icons/c02d.png">
-              </figure>
-              <div class="column temp">
-                <span class="row temp-high">20°C</span>
-                <span class="row temp-low">10°C</span>
-              </div>
-            </div>
-            <span class="row description"> Cloudy with showers</span>
-          </div>
+        <div id="forecasts" class="row row-wrap">
         </div>
       </div>
     </div>

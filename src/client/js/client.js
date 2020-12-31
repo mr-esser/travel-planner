@@ -10,49 +10,75 @@ const getInputText = function(selector) {
   return '';
 };
 
-/* Update the most recent entry in the UI */
-const updateUI = function({
-  city = '',
-  country = '',
-  departureDate = '',
-  returnDate = '',
-  duration = '',
-  forecasts = [],
-  image = '',
-}) {
-  const container = document.querySelector('#entryHolder');
+/* Update UI to show the most recent tripl */
+/* All trip fields are expected to be present
+ * and filled with reasonable defaults! */
+// TODO: Add appropriate test.
+const updateUI = function(trip) {
+  const {
+    city,
+    country = '',
+    departureDate = '',
+    returnDate = '',
+    duration = '',
+    forecasts = [],
+    image = '',
+  } = trip;
+  const container = document.querySelector('.container');
   // Trying to avoid several consecutive reflows/repaints here.
-  // Does not seem to be worth the effort, though.
-  container.style = 'display: none;';
-  container.querySelector('#depart-date').innerHTML = departureDate;
-  container.querySelector('#return-date').innerHTML = returnDate;
-  container.querySelector('#duration').innerHTML =
-    duration.toString() + ' days';
-  container.querySelector('#location').innerHTML = `${city}, ${country}`;
-  container.querySelector('#pic').innerHTML = `<img
-  src="${image.url}"
-  alt="Image showing landmark of ${city}, ${country}">`;
-  container.querySelector('#weather').innerHTML = `<div> 
-  <div>${forecasts[0].datetime}</div>
-  <img src="${forecasts[0].icon}">
-  <div>${forecasts[0].description}</div>
-  <div>${forecasts[0].min_temp}</div>
-  <div>${forecasts[0].max_temp}</div>
-  </div>`;
-  container.style = '';
+  container.style= 'display:none';
+
+  // Add image
+  const img = document.querySelector('#city-img');
+  img.setAttribute('src', image.url);
+
+  // Add trip summary
+  const rowTrip= document.querySelector('#trip');
+  const tripText = `
+  <p>
+     Your trip to ${city}, ${country} from ${departureDate} to ${returnDate} 
+     is ??? days away and will last ${duration} days.
+  </p> 
+  `;
+  rowTrip.innerHTML = tripText;
+
+  // Add forecasts
+  const rowForecasts = document.querySelector('#forecasts');
+  const foreCastHtml = forecasts.map( (forecast) => {
+    return `<div class="column column-25 forecast">
+        <p class="row"><span class="date">${forecast.datetime}</span></p>
+        <div class="row info">
+         <figure class="column icon">
+           <img src="${forecast.icon}">
+         </figure>
+         <p class="column temp">
+           <span class="row temp-high">${forecast.max_temp}°C</span>
+            <span class="row temp-low">${forecast.min_temp}°C</span>
+          </p>
+        </div>
+        <p class="row">
+          <span class="description">${forecast.description}</span>
+        </p>
+      </div>
+      `;
+  }).reduce((result, html) => {
+    return result.concat(html);
+  }, '');
+  rowForecasts.innerHTML = foreCastHtml;
+  container.style = 'container';
 };
 
 /* Main functions */
 
 
 /* MAIN function called by event listener on 'Generate' button */
-const handleGenerate = async function handleGenerate(event) {
+const handleSave = async function handleSave(event) {
   // TODO: Reflect on error handling and possible improvements.
   try {
     // Assuming that all inputs have been validated by the UI
     const city= getInputText('#city');
     const country= getInputText('#country');
-    const departureDate= getInputText('#depart');
+    const departureDate= getInputText('#departure');
     const returnDate= getInputText('#return');
     const trip =
       await collectTravelInfo(city, country, departureDate, returnDate);
@@ -77,7 +103,7 @@ window.addEventListener('DOMContentLoaded', () => {
   // Note(!) Button will not generate a 'submit' event
   // because it is not tied to a form.
   const generateButton = document.querySelector('#generate');
-  generateButton.addEventListener('click', handleGenerate);
+  generateButton.addEventListener('click', handleSave);
   // Try to load data from the server on startup.
   // There may already be some available.
   // TODO: Re-enable!
