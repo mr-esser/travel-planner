@@ -12,6 +12,11 @@
   margin-right: 2.5rem;
 }
 
+input[type='text']:hover {
+  border-color: #9b4dca;
+  outline: 0;
+}
+
 .date {
   text-align: start;
 }
