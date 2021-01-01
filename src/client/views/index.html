@@ -7,7 +7,6 @@
   <meta name="description" content="A simple travel plannder" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Travel Planner</title>
-  <!-- TODO: Move to SCSS and import from there -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
 </head>
 
@@ -28,15 +27,15 @@
         <div class="column">
           <form>
             <div class="row">
-              <div class="column column-25 column-center">
-                <label for="city">Destination</label>
+              <div class="column column-25">
+                <label for="city">City</label>
               </div>
               <div class="column column-bottom">
                 <input type="text" id="city" placeholder="City" />
               </div>
             </div>
             <div class="row">
-              <div class="column column-25 column-center">
+              <div class="column column-25">
                 <label for="country">Country</label>
               </div>
               <div class="column column-bottom">
@@ -44,7 +43,7 @@
               </div>
             </div>
             <div class="row">
-              <div class="column column-25 column-center">
+              <div class="column column-25">
                 <label for="depart">Departing</label>
               </div>
               <div class="column column-bottom">
@@ -52,7 +51,7 @@
               </div>
             </div>
             <div class="row">
-              <div class="column column-25 column-center">
+              <div class="column column-25">
                 <label for="return">Returning</label>
               </div>
               <div class="column column-bottom">
@@ -66,29 +65,111 @@
             </div>
           </form>
           <div class="row">
-            <p>
-              <!-- TODO: Add styles (before/after to preserve WS)-->
-              Your trip to CITY, COUNTRY from YYYY-MM-DD to YYYY-MM-DD is N days away and will last M days
-            </p>
+            <div class="column">
+              <p>
+                Your trip to <b>CITY</b>, <b>COUNTRY</b>
+                from <b>YYYY-MM-DD</b> to <b>YYYY-MM-DD</b>
+                is <b>N</b> days away
+                and will last <b>M</b> days.
+              </p>
+            </div>
           </div>
-          <div class="row container">
-            <div class="column column-25 forecast">
-              <div class="row row-stretch date">2020-31-12</div>
-              <div class="row info">
-                <div class="column">
+          <div id="forecasts" class="row row-wrap flex-row">
+            <div class="column column-25 column-forecast">
+              <div class="row row-no-padding flex-row">
+                <div class="column column-25">
                   <figure class="icon">
-                    <img src="https://www.weatherbit.io/static/img/icons/c02d.png">
+                    <img src="https://www.weatherbit.io/static/img/icons/c01d.png" title="Mix of sun and clouds">
                   </figure>
                 </div>
                 <div class="column temp">
-                  <span class="row temp-high">20°C</span>
-                  <span class="row temp-low">10°C</span>
+                  <div class="temp-high">20°C</div>
+                  <div class="temp-low">10°C</div>
                 </div>
               </div>
-              <div class="row">
-                <span class="description"> Cloudy with showers</span>
+              <div class="row row-no-padding flex-row">
+                <div class="column date">
+                  2020-12-31
+                </div>
               </div>
             </div>
+
+            <div class="column column-25 column-forecast">
+              <div class="row row-no-padding flex-row">
+                <div class="column column-25">
+                  <figure class="icon">
+                    <img src="https://www.weatherbit.io/static/img/icons/c02d.png" title="Mix of sun and clouds">
+                  </figure>
+                </div>
+                <div class="column temp">
+                  <div class="temp-high">20°C</div>
+                  <div class="temp-low">10°C</div>
+                </div>
+              </div>
+              <div class="row row-no-padding flex-row">
+                <div class="column date">
+                  2021-01-01
+                </div>
+              </div>
+            </div>
+
+            <div class="column column-25 column-forecast">
+              <div class="row row-no-padding flex-row">
+                <div class="column column-25">
+                  <figure class="icon">
+                    <img src="https://www.weatherbit.io/static/img/icons/c03d.png" title="Mix of sun and clouds">
+                  </figure>
+                </div>
+                <div class="column temp">
+                  <div class="temp-high">20°C</div>
+                  <div class="temp-low">10°C</div>
+                </div>
+              </div>
+              <div class="row row-no-padding flex-row">
+                <div class="column date">
+                  2021-01-02
+                </div>
+              </div>
+            </div>
+
+            <div class="column column-25 column-forecast">
+              <div class="row row-no-padding flex-row">
+                <div class="column column-25">
+                  <figure class="icon">
+                    <img src="https://www.weatherbit.io/static/img/icons/c04d.png" title="Mix of sun and clouds">
+                  </figure>
+                </div>
+                <div class="column temp">
+                  <div class="temp-high">20°C</div>
+                  <div class="temp-low">10°C</div>
+                </div>
+              </div>
+              <div class="row row-no-padding flex-row">
+                <div class="column date">
+                  2021-01-03
+                </div>
+              </div>
+            </div>
+
+            <div class="column column-25 column-forecast">
+              <div class="row row-no-padding flex-row">
+                <div class="column column-25">
+                  <figure class="icon">
+                    <img src="https://www.weatherbit.io/static/img/icons/c02d.png" title="Mix of sun and clouds">
+                  </figure>
+                </div>
+                <div class="column temp">
+                  <div class="temp-high">20°C</div>
+                  <div class="temp-low">10°C</div>
+                </div>
+              </div>
+              <div class="row row-no-padding flex-row">
+                <div class="column date">
+                  2021-01-04
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>

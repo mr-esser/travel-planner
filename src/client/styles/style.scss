@@ -1,6 +1,8 @@
 .icon {
-  min-width: 50%;
-  max-width: 50%;
+  margin: 0;
+  img {
+    max-width: 85%;
+  }
 }
 
 .figure-main {
@@ -8,4 +10,42 @@
   margin-top: 0;
   margin-left: 0;
   margin-right: 2.5rem;
+}
+
+.date {
+  text-align: start;
+}
+
+.column-forecast {
+  margin-top: 1.8rem;
+}
+
+.flex-row {
+  flex-direction: row;
+  margin-left: -1 rem;
+  width: calc(100% + 2rem);
+
+  .column {
+    margin-bottom: inherit;
+    padding: 0 1rem;
+  }
+}
+
+.temp {
+  font-size: xx-small;
+  line-height: 1em;
+}
+
+.date {
+  font-size: x-small;
+  font-weight: bold;
+}
+
+@media (min-width: 40rem) {
+  .temp {
+    font-size: x-small;
+  }
+  .date {
+    font-size: smaller;
+  }
 }
