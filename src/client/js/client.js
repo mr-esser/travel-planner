@@ -1,6 +1,11 @@
+/* Main client-side module.
+ * Reads from the UI, queries the server app for the required
+ * pieces of information, combines them and finally displays
+ * them in the UI. */
 import {collectTravelInfo} from './aggregateData';
 import {postTripData} from './syncTripData';
 
+// TODO: Re-arrange functions
 /* Will not validate the input! */
 const getInputText = function(selector) {
   const element = document.querySelector(selector);
@@ -20,26 +25,10 @@ const updateUI = function({
   forecasts = [],
   image = '',
 }) {
-  const container = document.querySelector('#entryHolder');
-  // Trying to avoid several consecutive reflows/repaints here.
-  // Does not seem to be worth the effort, though.
-  container.style = 'display: none;';
-  container.querySelector('#depart-date').innerHTML = departureDate;
-  container.querySelector('#return-date').innerHTML = returnDate;
-  container.querySelector('#duration').innerHTML =
-    duration.toString() + ' days';
-  container.querySelector('#location').innerHTML = `${city}, ${country}`;
-  container.querySelector('#pic').innerHTML = `<img
-  src="${image.url}"
-  alt="Image showing landmark of ${city}, ${country}">`;
-  container.querySelector('#weather').innerHTML = `<div> 
-  <div>${forecasts[0].datetime}</div>
-  <img src="${forecasts[0].icon}">
-  <div>${forecasts[0].description}</div>
-  <div>${forecasts[0].min_temp}</div>
-  <div>${forecasts[0].max_temp}</div>
-  </div>`;
-  container.style = '';
+  // TODO: Nothing happening here yet. Static UI for the moment.
+  // Try to avoid several consecutive reflows/repaints here.
+  // container.style = 'display: none;';
+  // container.style = '';
 };
 
 /* Main functions */
@@ -47,20 +36,20 @@ const updateUI = function({
 
 /* MAIN function called by event listener on 'Generate' button */
 const handleSubmit = async function handleSubmit(event) {
+  // Note(!): Will also preserve the form input (desired for the moment).
   event.preventDefault();
-  // TODO: Reflect on error handling and possible improvements.
   try {
-    // const form = document.querySelector('form');
-    // form.validate();
-    // Assuming that all inputs have been validated by the UI
+    // Assuming that all inputs have been validated by the UI or are empty
     const city= getInputText('#city');
     const country= getInputText('#country');
     const departureDate= getInputText('#depart');
     const returnDate= getInputText('#return');
 
-    const goOn = [city, country, departureDate, returnDate]
+    // Note(!): Need this because inputs do not have the 'required' attribute.
+    // This avoids errors on load when fields are bound to still be empty.
+    const inputComplete = [city, country, departureDate, returnDate]
         .every( (f) => f.length > 0);
-    if (!goOn) return;
+    if (!inputComplete) return;
 
     const trip =
       await collectTravelInfo(city, country, departureDate, returnDate);
@@ -68,6 +57,7 @@ const handleSubmit = async function handleSubmit(event) {
     console.debug('Complete data: ' + JSON.stringify(tripRecord));
     updateUI(tripRecord);
   } catch (networkError) {
+    // TODO: Update error handling.
     // Probably unrecoverable networking error ,i.e.: fetch rejected and threw
     console.error(networkError);
     // Very lazy!! Should rather use a dedicated <div>
@@ -79,27 +69,15 @@ const handleSubmit = async function handleSubmit(event) {
   }
 };
 
-// Event listener to add function to existing 'Generate' button.
+// Event listener to reload existing data
 window.addEventListener('DOMContentLoaded', () => {
   console.debug('::::: Script loaded! :::::');
-  // Note(!) Button will not generate a 'submit' event
-  // because it is not tied to a form.
-  // const generateButton = document.querySelector('#generate');
-  // generateButton.addEventListener('click', handleGenerate);
+  // TODO: Re-enable!
   // Try to load data from the server on startup.
   // There may already be some available.
-  // TODO: Re-enable!
   // getFromServer(getServiceUrl('all'))
   //     .then((data) => updateUI(data))
   //     .catch((error) => console.error(error));
-  // const cityField = document.querySelector('#city');
-  // cityField.addEventListener('blur', () => cityField.checkValidity());
-  // const countryField = document.querySelector('#country');
-  // countryField.addEventListener('blur', () => countryField.checkValidity());
-  // const departField = document.querySelector('#depart');
-  // departField.addEventListener('blur', () => departField.checkValidity());
-  // const returnField = document.querySelector('#return');
-  // returnField.addEventListener('blur', () => returnField.checkValidity());
 });
 
 export {handleSubmit};

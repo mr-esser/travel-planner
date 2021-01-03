@@ -1,7 +1,7 @@
 import * as Client from '../../../src/client/js/client';
 
-test('No API properties should be accessible', () => {
+test(`Client module exports only 'handleSubmit' function`, () => {
   expect(Object.keys(Client).length).toBe(1);
-  expect(Object.keys(Client)[0]).toBe('default');
-  expect(Object.values(Client)[0]).toEqual({});
+  expect(Object.keys(Client)[0]).toBe('handleSubmit');
+  expect(Object.values(Client)[0]).toBeInstanceOf(Function);
 });
