@@ -46,14 +46,22 @@ const updateUI = function({
 
 
 /* MAIN function called by event listener on 'Generate' button */
-const handleGenerate = async function handleGenerate(event) {
+const handleSubmit = async function handleSubmit(event) {
+  event.preventDefault();
   // TODO: Reflect on error handling and possible improvements.
   try {
+    // const form = document.querySelector('form');
+    // form.validate();
     // Assuming that all inputs have been validated by the UI
     const city= getInputText('#city');
     const country= getInputText('#country');
     const departureDate= getInputText('#depart');
     const returnDate= getInputText('#return');
+
+    const goOn = [city, country, departureDate, returnDate]
+        .every( (f) => f.length > 0);
+    if (!goOn) return;
+
     const trip =
       await collectTravelInfo(city, country, departureDate, returnDate);
     const tripRecord = await postTripData(trip);
@@ -76,12 +84,22 @@ window.addEventListener('DOMContentLoaded', () => {
   console.debug('::::: Script loaded! :::::');
   // Note(!) Button will not generate a 'submit' event
   // because it is not tied to a form.
-  const generateButton = document.querySelector('#generate');
-  generateButton.addEventListener('click', handleGenerate);
+  // const generateButton = document.querySelector('#generate');
+  // generateButton.addEventListener('click', handleGenerate);
   // Try to load data from the server on startup.
   // There may already be some available.
   // TODO: Re-enable!
   // getFromServer(getServiceUrl('all'))
   //     .then((data) => updateUI(data))
   //     .catch((error) => console.error(error));
+  // const cityField = document.querySelector('#city');
+  // cityField.addEventListener('blur', () => cityField.checkValidity());
+  // const countryField = document.querySelector('#country');
+  // countryField.addEventListener('blur', () => countryField.checkValidity());
+  // const departField = document.querySelector('#depart');
+  // departField.addEventListener('blur', () => departField.checkValidity());
+  // const returnField = document.querySelector('#return');
+  // returnField.addEventListener('blur', () => returnField.checkValidity());
 });
+
+export {handleSubmit};
