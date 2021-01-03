@@ -29,48 +29,55 @@ const updateUI = function(trip) {
     forecasts = [],
     image = '',
   } = trip;
-  const container = document.querySelector('.container');
-  // Trying to avoid several consecutive reflows/repaints here.
-  container.style= 'display:none';
 
-  // Add image
-  const img = document.querySelector('#city-img');
-  img.setAttribute('src', image.url);
+  const dynamicContent = document.querySelectorAll('.container')[1];
+  // Trying to avoid several consecutive reflows/repaints here.
+  dynamicContent.style= 'display:none';
+
+  // Add image // TODO: Add null-check
+  const figureDestination = document.querySelector('#img-dest');
+  figureDestination.setAttribute('src', image.url);
 
   // Add trip summary
-  const rowTrip= document.querySelector('#trip');
-  const tripText = `
-  <p>
-     Your trip to ${city}, ${country} from ${departureDate} to ${returnDate} 
-     is ??? days away and will last ${duration} days.
-  </p> 
+  const columnSummary= document.querySelector('#summary');
+  const summaryHtml = `
+  <p id="summary">
+    Your trip to <b>${city}</b>, <b>${country}</b>
+    from <b>${departureDate}</b> to <b>${returnDate}</b>
+    is <b>N</b> days away
+    and will last <b>${duration}</b> days.
+  </p>
   `;
-  rowTrip.innerHTML = tripText;
+  columnSummary.innerHTML = summaryHtml;
 
   // Add forecasts
   const rowForecasts = document.querySelector('#forecasts');
-  const foreCastHtml = forecasts.map( (forecast) => {
-    return `<div class="column column-25 forecast">
-        <p class="row"><span class="date">${forecast.datetime}</span></p>
-        <div class="row info">
-         <figure class="column icon">
-           <img src="${forecast.icon}">
-         </figure>
-         <p class="column temp">
-           <span class="row temp-high">${forecast.max_temp}°C</span>
-            <span class="row temp-low">${forecast.min_temp}°C</span>
-          </p>
-        </div>
-        <p class="row">
-          <span class="description">${forecast.description}</span>
-        </p>
+  const forecastsHtml = forecasts.map( (forecast) => {
+    return `
+  <div class="column column-25 column-forecast">
+    <div class="row row-no-padding force-flex-direction-row">
+      <div class="column column-25">
+       <figure class="icon">
+         <img src="${forecast.icon}" title="${forecast.description}">
+      </figure>
+     </div>
+    <div class="column temp">
+      <div class="temp-high">${forecast.max_temp}°C</div>
+      <div class="temp-low">${forecast.min_temp}°C</div>
+    </div>
+    </div>
+    <div class="row row-no-padding force-flex-direction-row">
+      <div class="column date">
+        ${forecast.datetime}
       </div>
-      `;
+    </div>
+  </div>
+`;
   }).reduce((result, html) => {
     return result.concat(html);
   }, '');
-  rowForecasts.innerHTML = foreCastHtml;
-  container.style = 'container';
+  rowForecasts.innerHTML = forecastsHtml;
+  dynamicContent.style = 'container';
 };
 
 /* Main functions */
@@ -84,9 +91,9 @@ const handleSubmit = async function handleSubmit(event) {
     // Assuming that all inputs have been validated by the UI or are empty
     const city= getInputText('#city');
     const country= getInputText('#country');
-    const departureDate= getInputText('#departure');
+    const departureDate= getInputText('#depart');
     const returnDate= getInputText('#return');
-
+    console.debug('Calling handleSubmit');
     // Note(!): Need this because inputs do not have the 'required' attribute.
     // This avoids errors on load when fields are bound to still be empty.
     const inputComplete = [city, country, departureDate, returnDate]
