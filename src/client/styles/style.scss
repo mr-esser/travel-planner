@@ -46,6 +46,13 @@ input[type='text']:hover {
   font-weight: bold;
 }
 
+h2.title-forecast{
+  font-size: 1.8rem;
+  letter-spacing: -.05rem;
+  line-height: 1.5rem;
+  margin-bottom: 1rem;
+}
+
 @media (min-width: 40rem) {
   .temp {
     font-size: x-small;

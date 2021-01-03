@@ -11,7 +11,7 @@
 </head>
 
 <body>
-  <section>
+  <main>
     <div class="container">
       <header>
         <h1>Travel Planner</h1>
@@ -60,8 +60,12 @@
             </div>
             <!-- TODO: Suppress events-->
             <div class="row">
-              <button id="generate" class="column button button-outline" type="button">Save</button>
-              <button id="btn-remove" class="column button button-outline" disabled type="button">Remove</button>
+              <div class="column">
+                <button id="generate" class="column button button-outline" type="button">Save</button>
+              </div>
+              <div class="column">
+                <button id="btn-remove" class="column button button-outline" disabled type="button">Remove</button>
+              </div>
             </div>
           </form>
           <div class="row">
@@ -74,6 +78,12 @@
               </p>
             </div>
           </div>
+          <div class="row">
+            <div class="column">
+              <h2 class="title-forecast">Weather Forecast</h2>
+            </div>
+          </div>
+
           <div id="forecasts" class="row row-wrap flex-row">
             <div class="column column-25 column-forecast">
               <div class="row row-no-padding flex-row">
@@ -176,7 +186,7 @@
     </div>
     </div>
     </div>
-  </section>
+  </main>
 </body>
 
 </html>
