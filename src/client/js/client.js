@@ -15,20 +15,62 @@ const getInputText = function(selector) {
   return '';
 };
 
-/* Update the most recent entry in the UI */
-const updateUI = function({
-  city = '',
-  country = '',
-  departureDate = '',
-  returnDate = '',
-  duration = '',
-  forecasts = [],
-  image = '',
-}) {
-  // TODO: Nothing happening here yet. Static UI for the moment.
-  // Try to avoid several consecutive reflows/repaints here.
-  // container.style = 'display: none;';
-  // container.style = '';
+/* Update UI to show the most recent tripl */
+/* All trip fields are expected to be present
+ * and filled with reasonable defaults! */
+// TODO: Add appropriate test.
+const updateUI = function(trip) {
+  const {
+    city,
+    country = '',
+    departureDate = '',
+    returnDate = '',
+    duration = '',
+    forecasts = [],
+    image = '',
+  } = trip;
+  const container = document.querySelector('.container');
+  // Trying to avoid several consecutive reflows/repaints here.
+  container.style= 'display:none';
+
+  // Add image
+  const img = document.querySelector('#city-img');
+  img.setAttribute('src', image.url);
+
+  // Add trip summary
+  const rowTrip= document.querySelector('#trip');
+  const tripText = `
+  <p>
+     Your trip to ${city}, ${country} from ${departureDate} to ${returnDate} 
+     is ??? days away and will last ${duration} days.
+  </p> 
+  `;
+  rowTrip.innerHTML = tripText;
+
+  // Add forecasts
+  const rowForecasts = document.querySelector('#forecasts');
+  const foreCastHtml = forecasts.map( (forecast) => {
+    return `<div class="column column-25 forecast">
+        <p class="row"><span class="date">${forecast.datetime}</span></p>
+        <div class="row info">
+         <figure class="column icon">
+           <img src="${forecast.icon}">
+         </figure>
+         <p class="column temp">
+           <span class="row temp-high">${forecast.max_temp}°C</span>
+            <span class="row temp-low">${forecast.min_temp}°C</span>
+          </p>
+        </div>
+        <p class="row">
+          <span class="description">${forecast.description}</span>
+        </p>
+      </div>
+      `;
+  }).reduce((result, html) => {
+    return result.concat(html);
+  }, '');
+  rowForecasts.innerHTML = foreCastHtml;
+  container.style = 'container';
 };
 
 /* Main functions */
@@ -42,7 +84,7 @@ const handleSubmit = async function handleSubmit(event) {
     // Assuming that all inputs have been validated by the UI or are empty
     const city= getInputText('#city');
     const country= getInputText('#country');
-    const departureDate= getInputText('#depart');
+    const departureDate= getInputText('#departure');
     const returnDate= getInputText('#return');
 
     // Note(!): Need this because inputs do not have the 'required' attribute.
