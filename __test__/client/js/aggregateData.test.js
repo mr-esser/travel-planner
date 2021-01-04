@@ -1,6 +1,6 @@
 import {
   collectTravelInfo, buildForecastData, calculateDurationDays,
-  buildImageData, buildTripData,
+  buildImageData, buildTripData, filterRelevantForecasts,
 } from '../../../src/client/js/aggregateData';
 
 describe(`Function 'calculateDurationDays'`, () => {
@@ -181,13 +181,13 @@ describe(`Function 'buildTripData'`, () => {
   test('should return correctly filled result object given adequate input data',
       async () => {
         expect(
-            await buildTripData('Berlin', 'DE', '1979-07-12', '1979-07-15',
+            await buildTripData('Berlin', 'DE', '2021-01-09', '2021-01-10',
                 {
                   data: [
                     {
                       sunset_ts: 1605885016,
                       moon_phase: 0.365761,
-                      datetime: '1979-07-12',
+                      datetime: '2021-01-09',
                       app_max_temp: 2.4,
                       uv: 0.757605,
                       weather: {
@@ -203,7 +203,7 @@ describe(`Function 'buildTripData'`, () => {
                     {
                       sunset_ts: 1605885014,
                       moon_phase: 0.365762,
-                      datetime: '1979-07-13',
+                      datetime: '2021-01-10',
                       app_max_temp: 3.4,
                       uv: 0.657605,
                       weather: {
@@ -258,19 +258,19 @@ describe(`Function 'buildTripData'`, () => {
                   ]})).toEqual({
           city: 'Berlin',
           country: 'DE',
-          departureDate: '1979-07-12',
-          returnDate: '1979-07-15',
-          duration: 4,
+          departureDate: '2021-01-09',
+          returnDate: '2021-01-10',
+          duration: 2,
           forecasts: [
             {
-              datetime: '1979-07-12',
+              datetime: '2021-01-09',
               max_temp: 5.8,
               min_temp: 1.2,
               icon: `https://www.weatherbit.io/static/img/icons/c02d.png`,
               description: 'Scattered clouds',
             },
             {
-              datetime: '1979-07-13',
+              datetime: '2021-01-10',
               max_temp: 7.8,
               min_temp: 4.3,
               icon: `https://www.weatherbit.io/static/img/icons/c03d.png`,
@@ -371,5 +371,74 @@ describe(`Function 'collectTravelInfo'`, () => {
     expect(mockFnFetchWeatherData).toBeCalledTimes(1);
     expect(mockFnFetchImageData).toBeCalledTimes(1);
     expect(tripData).toEqual(expectedTripData);
+  });
+});
+
+describe(`Function 'filterRelevantForecasts'`, () => {
+  const dailyForecasts = [
+    {
+      datetime: '2021-01-09',
+      max_temp: 5.8,
+      min_temp: 1.2,
+      icon: `https://www.weatherbit.io/static/img/icons/c02d.png`,
+      description: 'Scattered clouds',
+    },
+    {
+      datetime: '2021-01-10',
+      max_temp: 7.8,
+      min_temp: 4.3,
+      icon: `https://www.weatherbit.io/static/img/icons/c03d.png`,
+      description: 'Other clouds',
+    },
+    {
+      datetime: '2021-01-16',
+      max_temp: 10.8,
+      min_temp: 5.5,
+      icon: `https://www.weatherbit.io/static/img/icons/c03d.png`,
+      description: 'Other clouds',
+    },
+  ];
+
+  test('should be exported from its module', () => {
+    expect(filterRelevantForecasts).toBeDefined();
+  });
+
+  test.each([
+    [undefined, []],
+    [null, []],
+    [[], []],
+  ])(`should return empty array when there are no forecasts`,
+      (forecasts, expected) => {
+        expect(filterRelevantForecasts(
+            forecasts, 2, '2021-01-09', '2021-01-10'),
+        ).toEqual(expected);
+      });
+
+  test.each([
+    [0, []],
+    [-2, []],
+  ])(`should return empty array when called with duration '%s'`,
+      (duration, expected) => {
+        expect(filterRelevantForecasts(
+            dailyForecasts, duration, '2021-01-09', '2021-01-10',
+        )).toEqual(expected);
+      });
+
+  test('should return empty array if trip started in the past', () => {
+    expect(filterRelevantForecasts(
+        dailyForecasts, 3, '2021-01-08', '2021-01-10'),
+    ).toEqual([]);
+  });
+
+  test('should return all forecasts in range if trip starts today', () => {
+    expect(filterRelevantForecasts(
+        dailyForecasts, 2, '2021-01-09', '2021-01-16'),
+    ).toEqual(dailyForecasts);
+  });
+
+  test('should return all forecasts in range if trip starts tomorrow', () => {
+    expect(filterRelevantForecasts(
+        dailyForecasts, 1, '2021-01-10', '2021-01-10'),
+    ).toEqual(dailyForecasts.slice(1, 2));
   });
 });
