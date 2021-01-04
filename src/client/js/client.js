@@ -44,32 +44,32 @@ const updateUI = function(trip) {
   <p id="summary">
     Your trip to <b>${city}</b>, <b>${country}</b>
     from <b>${departureDate}</b> to <b>${returnDate}</b>
-    is <b>N</b> days away
-    and will last <b>${duration}</b> days.
+    is <b>N</b> days away and will last <b>${duration}</b> days.
   </p>
   `;
   columnSummary.innerHTML = summaryHtml;
 
   // Add forecasts
+  const headerForecast = document.querySelector('#header-forecast');
+  headerForecast.innerHTML =
+    `<h2 class="header-forecast">Weather Forecast</h2>`;
   const rowForecasts = document.querySelector('#forecasts');
   const forecastsHtml = forecasts.map( (forecast) => {
     return `
   <div class="column column-25 column-forecast">
     <div class="row row-no-padding force-flex-direction-row">
       <div class="column column-25">
-       <figure class="icon">
-         <img src="${forecast.icon}" title="${forecast.description}">
-      </figure>
-     </div>
-    <div class="column temp">
-      <div class="temp-high">${forecast.max_temp}°C</div>
-      <div class="temp-low">${forecast.min_temp}°C</div>
-    </div>
+        <figure class="icon">
+          <img src="${forecast.icon}" title="${forecast.description}">
+        </figure>
+      </div>
+      <div class="column temp">
+        <div class="temp-high">${forecast.max_temp}°C</div>
+        <div class="temp-low">${forecast.min_temp}°C</div>
+      </div>
     </div>
     <div class="row row-no-padding force-flex-direction-row">
-      <div class="column date">
-        ${forecast.datetime}
-      </div>
+      <div class="column date">${forecast.datetime}</div>
     </div>
   </div>
 `;
