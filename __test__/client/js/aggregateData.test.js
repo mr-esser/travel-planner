@@ -1,6 +1,7 @@
 import {
   collectTravelInfo, buildForecastData, calculateDurationDays,
-  buildImageData, buildTripData, filterRelevantForecasts,
+  calculateCountdownDays, buildImageData, buildTripData,
+  getRelevantForecasts,
 } from '../../../src/client/js/aggregateData';
 
 describe(`Function 'calculateDurationDays'`, () => {
@@ -28,6 +29,26 @@ describe(`Function 'calculateDurationDays'`, () => {
     expect(calculateDurationDays(departureDate, returnDate))
         .toBe(4);
   });
+});
+
+describe(`Function 'calculateCountdownDays'`, () => {
+  test('should be exported from its module', () => {
+    expect(calculateCountdownDays).toBeDefined();
+  });
+
+  test.each([
+    ['2020-12-10', '2020-12-10', +0],
+    ['2020-12-10', '2020-12-11', +1],
+    ['2020-12-10', '2020-12-14', +4],
+    ['2020-12-10', '2020-12-09', -1],
+    [null, null, 0],
+    [undefined, undefined, 0],
+    ['Hello, world!', '2020-12-10', 0],
+    ['2020-12-10', 'Hello, world!', 0],
+  ])(`when called with '%s' and '%s' should yield '%i'`,
+      (from, to, expected) => {
+        expect(calculateCountdownDays(from, to)).toBe(expected);
+      });
 });
 
 describe(`Function 'buildForecastData'`, () => {
@@ -172,6 +193,7 @@ describe(`Function 'buildTripData'`, () => {
           country: '',
           departureDate: '',
           returnDate: '',
+          countdown: 0,
           duration: 0,
           forecasts: [],
           image: {},
@@ -255,11 +277,12 @@ describe(`Function 'buildTripData'`, () => {
                       user_id: 5338,
                       user: 'HighTower',
                     },
-                  ]})).toEqual({
+                  ]}, '2021-01-09' )).toEqual({
           city: 'Berlin',
           country: 'DE',
           departureDate: '2021-01-09',
           returnDate: '2021-01-10',
+          countdown: 0,
           duration: 2,
           forecasts: [
             {
@@ -305,6 +328,7 @@ describe(`Function 'collectTravelInfo'`, () => {
       city: 'Berlin',
       country: 'DE',
       departureDate: '2020-12-30',
+      countdown: 0,
       duration: 2,
       forecasts: [],
       image: {},
@@ -318,7 +342,7 @@ describe(`Function 'collectTravelInfo'`, () => {
 
   test('should return a trip when all fetch calls succeed', async () => {
     const tripData = await collectTravelInfo(
-        'Berlin', 'DE', '2020-12-30', '2020-12-31',
+        'Berlin', 'DE', '2020-12-30', '2020-12-31', '2020-12-30',
         mockFnFetchGeoData, mockFnFetchWeatherData, mockFnFetchImageData,
     );
     expect(mockFnFetchGeoData).toBeCalledTimes(1);
@@ -340,7 +364,7 @@ describe(`Function 'collectTravelInfo'`, () => {
   test('should return a trip when fetch geo data throws', async () => {
     mockFnFetchGeoData = jest.fn().mockRejectedValue(mockFetchError);
     const tripData = await collectTravelInfo(
-        'Berlin', 'DE', '2020-12-30', '2020-12-31',
+        'Berlin', 'DE', '2020-12-30', '2020-12-31', '2020-12-30',
         mockFnFetchGeoData, mockFnFetchWeatherData, mockFnFetchImageData,
     );
     expect(mockFnFetchGeoData).toBeCalledTimes(1);
@@ -352,7 +376,7 @@ describe(`Function 'collectTravelInfo'`, () => {
   test('should return a trip when fetch weather data throws', async () => {
     mockFnFetchWeatherData = jest.fn().mockRejectedValue(mockFetchError);
     const tripData = await collectTravelInfo(
-        'Berlin', 'DE', '2020-12-30', '2020-12-31',
+        'Berlin', 'DE', '2020-12-30', '2020-12-31', '2020-12-30',
         mockFnFetchGeoData, mockFnFetchWeatherData, mockFnFetchImageData,
     );
     expect(mockFnFetchGeoData).toBeCalledTimes(1);
@@ -364,7 +388,7 @@ describe(`Function 'collectTravelInfo'`, () => {
   test('should return a trip when fetch image data throws', async () => {
     mockFnFetchImageData = jest.fn().mockRejectedValue(mockFetchError);
     const tripData = await collectTravelInfo(
-        'Berlin', 'DE', '2020-12-30', '2020-12-31',
+        'Berlin', 'DE', '2020-12-30', '2020-12-31', '2020-12-30',
         mockFnFetchGeoData, mockFnFetchWeatherData, mockFnFetchImageData,
     );
     expect(mockFnFetchGeoData).toBeCalledTimes(1);
@@ -374,7 +398,7 @@ describe(`Function 'collectTravelInfo'`, () => {
   });
 });
 
-describe(`Function 'filterRelevantForecasts'`, () => {
+describe(`Function 'getRelevantForecasts'`, () => {
   const dailyForecasts = [
     {
       datetime: '2021-01-09',
@@ -400,7 +424,7 @@ describe(`Function 'filterRelevantForecasts'`, () => {
   ];
 
   test('should be exported from its module', () => {
-    expect(filterRelevantForecasts).toBeDefined();
+    expect(getRelevantForecasts).toBeDefined();
   });
 
   test.each([
@@ -409,8 +433,8 @@ describe(`Function 'filterRelevantForecasts'`, () => {
     [[], []],
   ])(`should return empty array when there are no forecasts`,
       (forecasts, expected) => {
-        expect(filterRelevantForecasts(
-            forecasts, 2, '2021-01-09', '2021-01-10'),
+        expect(getRelevantForecasts(
+            forecasts, 2, '2021-01-09', '2021-01-10', '2021-01-09'),
         ).toEqual(expected);
       });
 
@@ -419,26 +443,26 @@ describe(`Function 'filterRelevantForecasts'`, () => {
     [-2, []],
   ])(`should return empty array when called with duration '%s'`,
       (duration, expected) => {
-        expect(filterRelevantForecasts(
-            dailyForecasts, duration, '2021-01-09', '2021-01-10',
+        expect(getRelevantForecasts(
+            dailyForecasts, duration, '2021-01-09', '2021-01-10', '2021-01-09',
         )).toEqual(expected);
       });
 
   test('should return empty array if trip started in the past', () => {
-    expect(filterRelevantForecasts(
-        dailyForecasts, 3, '2021-01-08', '2021-01-10'),
+    expect(getRelevantForecasts(
+        dailyForecasts, 3, '2021-01-08', '2021-01-10', '2021-01-09'),
     ).toEqual([]);
   });
 
   test('should return all forecasts in range if trip starts today', () => {
-    expect(filterRelevantForecasts(
-        dailyForecasts, 2, '2021-01-09', '2021-01-16'),
+    expect(getRelevantForecasts(
+        dailyForecasts, 2, '2021-01-09', '2021-01-16', '2021-01-09'),
     ).toEqual(dailyForecasts);
   });
 
   test('should return all forecasts in range if trip starts tomorrow', () => {
-    expect(filterRelevantForecasts(
-        dailyForecasts, 1, '2021-01-10', '2021-01-10'),
+    expect(getRelevantForecasts(
+        dailyForecasts, 1, '2021-01-10', '2021-01-10', '2021-01-09'),
     ).toEqual([{
       datetime: '2021-01-10',
       max_temp: 7.8,
@@ -450,8 +474,8 @@ describe(`Function 'filterRelevantForecasts'`, () => {
 
   test('should return typical forecast if trip starts too far in the future',
       () => {
-        expect(filterRelevantForecasts(
-            dailyForecasts, 1, '2022-01-10', '2022-03-10'),
+        expect(getRelevantForecasts(
+            dailyForecasts, 1, '2022-01-10', '2022-03-10', '2021-01-09'),
         ).toEqual([{
           datetime: '2022-01-10',
           max_temp: 5.8,

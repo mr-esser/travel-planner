@@ -7,6 +7,7 @@ const collectTravelInfo = async function(
     country,
     departureDate,
     returnDate,
+    todaysDate = getTodaysDate(),
     fetchGeo = fetchGeoData,
     fetchWeather = fetchWeatherData,
     fetchImage = fetchImageData,
@@ -30,7 +31,8 @@ const collectTravelInfo = async function(
     console.info(error);
   }
   const tripData = buildTripData(
-      city, country, departureDate, returnDate, rawWeatherData, rawImageData,
+      city, country, departureDate, returnDate,
+      rawWeatherData, rawImageData, todaysDate,
   );
   return tripData;
 };
@@ -42,21 +44,36 @@ const buildTripData = async function(
     departureDate,
     returnDate,
     rawWeatherData,
-    rawImageData) {
+    rawImageData,
+    today = getTodaysDate(),
+) {
   const duration = calculateDurationDays(departureDate, returnDate);
+  const countdown = calculateCountdownDays(today, departureDate);
   const dailyForecasts = buildForecastData(rawWeatherData);
-  const relevantForecasts = filterRelevantForecasts(
-      dailyForecasts, duration, departureDate, returnDate,
+  const relevantForecasts = getRelevantForecasts(
+      dailyForecasts, duration, departureDate, returnDate, today,
   );
   return {
     city: city ?? '',
     country: country ?? '',
     departureDate: departureDate ?? '',
     returnDate: returnDate ?? '',
+    countdown: countdown,
     duration: duration,
     forecasts: relevantForecasts,
     image: buildImageData(rawImageData),
   };
+};
+
+const calculateCountdownDays = function(from, to) {
+  const duration = calculateDurationDays(from, to);
+  if (duration === 0) {
+    return 0;
+  }
+  if (duration > 0) {
+    return duration - 1;
+  }
+  return duration + 1;
 };
 
 const calculateDurationDays = function(start, end) {
@@ -89,20 +106,17 @@ const buildForecastData = function(rawForecast) {
   return rawForecast?.data?.map(buildCompactDailyForecast) ?? [];
 };
 
-const filterRelevantForecasts = function(
+const getRelevantForecasts = function(
     dailyForecasts,
     duration,
     departureDate,
     returnDate,
-    today,
+    today = getTodaysDate(),
 ) {
   // No data available
   if (!dailyForecasts || dailyForecasts.length === 0) return [];
   // Discard all forecasts. This is impossible
   if (duration <= 0) return [];
-  if (!today || today.length === 0) {
-    today = getToday();
-  }
   // String based comparison. Assuming date format YYYY-MM-DD here.
   if (departureDate < today) {
     return [];
@@ -122,7 +136,7 @@ const filterRelevantForecasts = function(
 };
 
 /* yyyy-mm-dd */
-const getToday = function() {
+const getTodaysDate = function() {
   return new Date().toLocaleDateString('en-CA');
 };
 
@@ -141,9 +155,10 @@ const buildImageData = function(rawImageData) {
 
 export {
   collectTravelInfo,
+  calculateCountdownDays,
   calculateDurationDays,
   buildForecastData,
   buildImageData,
   buildTripData,
-  filterRelevantForecasts,
+  getRelevantForecasts,
 };

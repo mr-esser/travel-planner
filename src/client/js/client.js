@@ -15,7 +15,7 @@ const getInputText = function(selector) {
   return '';
 };
 
-/* Update UI to show the most recent tripl */
+/* Update UI to show the most recent trip. */
 /* All trip fields are expected to be present
  * and filled with reasonable defaults! */
 // TODO: Add appropriate test.
@@ -25,6 +25,7 @@ const updateUI = function(trip) {
     country = '',
     departureDate = '',
     returnDate = '',
+    countdown = '',
     duration = '',
     forecasts = [],
     image = '',
@@ -44,7 +45,7 @@ const updateUI = function(trip) {
   <p id="summary">
     Your trip to <b>${city}</b>, <b>${country}</b>
     from <b>${departureDate}</b> to <b>${returnDate}</b>
-    is <b>N</b> days away and will last <b>${duration}</b> days.
+    is <b>${countdown}</b> days away and will last <b>${duration}</b> days.
   </p>
   `;
   columnSummary.innerHTML = summaryHtml;
@@ -54,7 +55,7 @@ const updateUI = function(trip) {
   headerForecast.innerHTML =
     `<h2 class="header-forecast">Weather Forecast</h2>`;
   const rowForecasts = document.querySelector('#forecasts');
-  const forecastsHtml = forecasts.map( (forecast) => {
+  const forecastsHtml = forecasts.map((forecast) => {
     return `
   <div class="column column-25 column-forecast">
     <div class="row row-no-padding force-flex-direction-row">
@@ -80,10 +81,8 @@ const updateUI = function(trip) {
   dynamicContent.style = 'container';
 };
 
-/* Main functions */
 
-
-/* MAIN function called by event listener on 'Generate' button */
+/* MAIN function called by event listener on 'Save' button */
 const handleSubmit = async function handleSubmit(event) {
   // Note(!): Will also preserve the form input (desired for the moment).
   event.preventDefault();
