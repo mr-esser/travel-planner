@@ -100,19 +100,25 @@ const filterRelevantForecasts = function(
   if (!dailyForecasts || dailyForecasts.length === 0) return [];
   // Discard all forecasts. This is impossible
   if (duration <= 0) return [];
-  // String based comparison. Assuming date format YYYY-MM-DD here.
-  // Trip now or in the future.
   if (!today || today.length === 0) {
     today = getToday();
   }
-  if (departureDate >= today) {
-    return dailyForecasts.filter(
-        (forecast) => {
-          return forecast.datetime >= departureDate &&
-          forecast.datetime <= returnDate;
-        });
+  // String based comparison. Assuming date format YYYY-MM-DD here.
+  if (departureDate < today) {
+    return [];
   }
-  return [];
+  // Trip starting today or in the future
+  const relevantForecasts = dailyForecasts.filter((forecast) => {
+    return forecast.datetime >= departureDate &&
+           forecast.datetime <= returnDate;
+  });
+  if (relevantForecasts.length === 0) {
+    // TODO: Implement a more realistic solution
+    const typicalForecast = dailyForecasts[0];
+    typicalForecast.datetime = departureDate;
+    relevantForecasts.push(typicalForecast);
+  }
+  return relevantForecasts;
 };
 
 /* yyyy-mm-dd */

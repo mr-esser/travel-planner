@@ -439,6 +439,25 @@ describe(`Function 'filterRelevantForecasts'`, () => {
   test('should return all forecasts in range if trip starts tomorrow', () => {
     expect(filterRelevantForecasts(
         dailyForecasts, 1, '2021-01-10', '2021-01-10'),
-    ).toEqual(dailyForecasts.slice(1, 2));
+    ).toEqual([{
+      datetime: '2021-01-10',
+      max_temp: 7.8,
+      min_temp: 4.3,
+      icon: `https://www.weatherbit.io/static/img/icons/c03d.png`,
+      description: 'Other clouds',
+    }]);
   });
+
+  test('should return typical forecast if trip starts too far in the future',
+      () => {
+        expect(filterRelevantForecasts(
+            dailyForecasts, 1, '2022-01-10', '2022-03-10'),
+        ).toEqual([{
+          datetime: '2022-01-10',
+          max_temp: 5.8,
+          min_temp: 1.2,
+          icon: `https://www.weatherbit.io/static/img/icons/c02d.png`,
+          description: 'Scattered clouds',
+        }]);
+      });
 });
