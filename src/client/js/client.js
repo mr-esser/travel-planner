@@ -125,6 +125,7 @@ const updateUI = function(trip) {
 };
 
 const showFatalError = function() {
+  // Show error message
   const columnSummary= document.querySelector('#summary');
   const summaryHtml = `
   <p class="error">
@@ -133,6 +134,15 @@ const showFatalError = function() {
   </p>
   `;
   columnSummary.innerHTML = summaryHtml;
+
+  // Reset figure
+  const figureDestination = document.querySelector('#img-dest');
+  figureDestination.setAttribute('src', defaultImage);
+  // Reset forecasts
+  const headerForecast = document.querySelector('#header-forecast');
+  headerForecast.innerHTML ='';
+  const rowForecasts = document.querySelector('#forecasts');
+  rowForecasts.innerHTML = '';
 };
 
 // Event listener to reload existing data
