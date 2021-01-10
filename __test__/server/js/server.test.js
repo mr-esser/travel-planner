@@ -21,6 +21,12 @@ test('GET / should yield 200', () => {
       .expect(200);
 });
 
+test('GET /favicon.ico should yield 204', () => {
+  return/* ! */ request(app)
+      .get('/favicon.ico')
+      .expect(204);
+});
+
 describe('GET on /geodata should fail with 400', () => {
   test.each([
     [

@@ -45,6 +45,11 @@ app.get('/', function(req, res) {
   res.status(200).send('Hello from travel planner!');
 });
 
+/* Prevent errors when client requests favicon */
+app.get('/favicon.ico', function(req, res) {
+  res.sendStatus(204);
+});
+
 app.get('/geodata', async function(req, res, next) {
   try {
     const geoData = await fetchGeoData(req.query?.city, req.query?.country);
