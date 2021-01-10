@@ -4,39 +4,39 @@
  * them in the UI. */
 import {collectTravelInfo} from './aggregateData';
 import {postTripData} from './syncTripData';
+import defaultImage from './../media/luggage-640.jpg';
 
 /* MAIN function reacting to 'Save' events. */
 const handleSubmit = async function handleSubmit(event) {
-  // Note(!): Will also preserve the form input (desired for the moment).
+  console.debug(':::Calling handleSubmit:::');
+  // Note(!): Preventing the default event will also preserve
+  // the form input (desired for the moment).
   event.preventDefault();
   try {
-    // Assuming that all inputs have been validated by the UI or are empty
+    // All inputs have been validated by the UI or are empty (trimmed)
     const city= getInputText('#city');
     const country= getInputText('#country');
     const departureDate= getInputText('#depart');
     const returnDate= getInputText('#return');
-    console.debug('Calling handleSubmit');
-    // Note(!): Need this because inputs do not have the 'required' attribute.
-    // This avoids errors on load when fields are bound to still be empty.
+    // Note(!): Form inputs do not specify the 'required' attribute
+    // to avoid errors on page load when fields are bound to still be empty.
+    // Need to make sure that they are filled before executing any requests.
     const inputComplete = [city, country, departureDate, returnDate]
         .every( (f) => f.length > 0);
-    if (!inputComplete) return;
+    if (!inputComplete) {
+      return;
+    }
 
     const trip =
       await collectTravelInfo(city, country, departureDate, returnDate);
     const tripRecord = await postTripData(trip);
-    console.debug('Complete data: ' + JSON.stringify(tripRecord));
+    console.debug(`:::Complete trip data: ${JSON.stringify(tripRecord)}:::`);
     updateUI(tripRecord);
-  } catch (networkError) {
-    // TODO: Update error handling.
-    // Probably unrecoverable networking error ,i.e.: fetch rejected and threw
-    console.error(networkError);
-    // Very lazy!! Should rather use a dedicated <div>
-    // to display the error and hide the rest.
-    updateUI({
-      departureDate:
-        'Ooops. Looks like the service is down. Please, try again later.',
-    });
+  } catch (fatalError) {
+    // Most likely networking error;
+    // i.e.: fetch sent to express backend rejected and threw.
+    console.error(fatalError);
+    showFatalError();
   }
 };
 
@@ -52,28 +52,33 @@ const getInputText = function(selector) {
 /* Update the UI to show the most recent trip. */
 /* All trip fields are expected to be present
  * and filled with reasonable defaults! */
-// TODO: Add appropriate test.
 const updateUI = function(trip) {
   const {
     city,
-    country = '',
-    departureDate = '',
-    returnDate = '',
-    countdown = '',
-    duration = '',
-    forecasts = [],
-    image = '',
+    country,
+    departureDate,
+    returnDate,
+    countdown,
+    duration,
+    forecasts,
+    image,
   } = trip;
 
   const dynamicContent = document.querySelectorAll('.container')[1];
   // Trying to avoid several consecutive reflows/repaints here.
   dynamicContent.style= 'display:none';
 
-  // Add image // TODO: Add null-check
+  // Set main image
   const figureDestination = document.querySelector('#img-dest');
-  figureDestination.setAttribute('src', image.url);
+  let imgSrc = defaultImage;
+  if (image && image.url && image.url.length > 0) {
+    imgSrc = image.url;
+  }
+  figureDestination.setAttribute('src', imgSrc);
 
-  // Add trip summary
+  // Add trip summary.
+  // Data will always be present because it is computed locally.
+  // TODO: Add error message in case dates are in the past or don't make sense.
   const columnSummary= document.querySelector('#summary');
   const summaryHtml = `
   <p id="summary">
@@ -84,10 +89,12 @@ const updateUI = function(trip) {
   `;
   columnSummary.innerHTML = summaryHtml;
 
-  // Add forecasts
+  // Add forecasts (if any)
   const headerForecast = document.querySelector('#header-forecast');
-  headerForecast.innerHTML =
+  if (forecasts && forecasts.length > 0) {
+    headerForecast.innerHTML =
     `<h2 class="header-forecast">Weather Forecast</h2>`;
+  }
   const rowForecasts = document.querySelector('#forecasts');
   const forecastsHtml = forecasts.map((forecast) => {
     return `
@@ -112,12 +119,26 @@ const updateUI = function(trip) {
     return result.concat(html);
   }, '');
   rowForecasts.innerHTML = forecastsHtml;
+
+  // Make container visible again.
   dynamicContent.style = 'container';
+};
+
+const showFatalError = function() {
+  const columnSummary= document.querySelector('#summary');
+  const summaryHtml = `
+  <p class="error">
+    Ooops. Something went terribly wrong. 
+    Please, check your form input and try again later.
+  </p>
+  `;
+  columnSummary.innerHTML = summaryHtml;
 };
 
 // Event listener to reload existing data
 window.addEventListener('DOMContentLoaded', () => {
   console.debug('::::: Script loaded! :::::');
+
   // TODO: Re-enable!
   // Try to load data from the server on startup.
   // There may already be some available.

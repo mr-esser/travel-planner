@@ -16,8 +16,7 @@ const collectTravelInfo = async function(
   let rawImageData;
 
   try {
-  // TODO: Error handling
-    console.debug(`Fetching geo data for: ${city}, ${country}`);
+    console.debug(`:::Fetching geo data for: ${city}, ${country}:::`);
     const geoData = await fetchGeo(city, country);
     const {lat, lng} = geoData.geonames[0];
     // TODO: Run in parallel
@@ -45,13 +44,13 @@ const buildTripData = async function(
     returnDate,
     rawWeatherData,
     rawImageData,
-    today = getTodaysDate(),
+    todaysDate = getTodaysDate(),
 ) {
   const duration = calculateDurationDays(departureDate, returnDate);
-  const countdown = calculateCountdownDays(today, departureDate);
+  const countdown = calculateCountdownDays(todaysDate, departureDate);
   const dailyForecasts = buildForecastData(rawWeatherData);
   const relevantForecasts = getRelevantForecasts(
-      dailyForecasts, duration, departureDate, returnDate, today,
+      dailyForecasts, duration, departureDate, returnDate, todaysDate,
   );
   return {
     city: city ?? '',
@@ -117,7 +116,7 @@ const getRelevantForecasts = function(
   if (!dailyForecasts || dailyForecasts.length === 0) return [];
   // Discard all forecasts. This is impossible
   if (duration <= 0) return [];
-  // String based comparison. Assuming date format YYYY-MM-DD here.
+  // String based comparison. Assuming date format yyyy-mm-dd here.
   if (departureDate < today) {
     return [];
   }
@@ -127,7 +126,8 @@ const getRelevantForecasts = function(
            forecast.datetime <= returnDate;
   });
   if (relevantForecasts.length === 0) {
-    // TODO: Implement a more realistic solution
+    // Poor man's solution for determining typical weather
+    // when the departure date lies too far in the future.
     const typicalForecast = dailyForecasts[0];
     typicalForecast.datetime = departureDate;
     relevantForecasts.push(typicalForecast);

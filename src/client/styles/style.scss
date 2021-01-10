@@ -31,7 +31,8 @@ h2.header-forecast {
 // Display daily forecasts side-by-side
 .force-flex-direction-row {
   flex-direction: row;
-  margin-left: -1 rem;
+  margin-left: -1rem;
+  padding: 0 1rem;
   width: calc(100% + 2rem);
 
   .column {
@@ -72,4 +73,9 @@ h2.header-forecast {
   .date {
     font-size: smaller;
   }
+}
+
+.error {
+  font-weight: 900;
+  color: red;
 }
