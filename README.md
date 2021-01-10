@@ -27,8 +27,8 @@ and then display a short summary of your trip, a landmark image of your destinat
     WEATHER_URL=http://api.weatherbit.io/v2.0/forecast/daily
     WEATHER_API_KEY=<your_weatherbit_api_key>
     ```
-1. Build the server by running `npm run build-prod`.
-1. Start up the server with `npm run start`.
+1. Build the server by running `npm run build`.
+1. Start up the server with `npm run express-server`.
 1. Verify that the server is up and running by checking Node's console log. 
    It should at least mention the port the app is listening on (**8080** by default).
 1. In your browser, navigate to `localhost:8080` to access the web frontend. Prefer a recent version of Google's Chrome.
@@ -45,7 +45,7 @@ Provided that valid dates are entered (e.g.: departing today, returning in two d
 * Sydney, AU.
 
 # Development
-- The frontend can be served in dev mode by running `npm run build-dev`.
+- The frontend can be served in dev mode by running `npm run dev-server`.
   The dev server is configured to listen on **port 9000** per default and will properly interact with the production backend, if it is running and listening on **port 8080**. It will attempt to open the frontend page in Chrome automatically.
 - Linting (JS only): `npm run lint`.
 - Unit testing: `npm run test`.
