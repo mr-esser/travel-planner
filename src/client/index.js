@@ -5,7 +5,6 @@ import {handleSubmit} from './js/client';
 // that pre-defined styles can be overridden selectively.
 import 'modules/normalize.css/normalize.css';
 import 'modules/milligram/dist/milligram.css';
-import 'modules/css-tooltip/dist/css-tooltip.css';
 import './styles/style.scss';
 
 export {handleSubmit};
