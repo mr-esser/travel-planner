@@ -14,7 +14,7 @@ and then display a short summary of your trip, a landmark image of your destinat
 # Running the App Locally
 1. Clone this repository and switch to the main branch.
 1. Install a recent version of Node (>= v15.5.0) and NPM (>= 7.3.0).
-1. Install the necessary dependencies by running `npm install`.
+1. Install the necessary dependencies by running `npm install`. This may take a while.
 1. Sign up for a free account at [GeoNames](https://www.geonames.org), [Weatherbit](https://www.weatherbit.io) and [pixabay](https://pixabay.com).
 1. In the project root folder, create a file `.env` and replace the placeholders with your API credentials.
     ```
@@ -32,6 +32,8 @@ and then display a short summary of your trip, a landmark image of your destinat
 1. Verify that the server is up and running by checking Node's console log. 
    It should at least mention the port the app is listening on (**8080** by default).
 1. In your browser, navigate to `localhost:8080` to access the web frontend. Prefer a recent version of Google's Chrome.
+
+:zap: If running any of the build scripts fails due to problems with package `node-sass` try running `npm rebuild node-sass`. May take a while to complete.
 
 # Troubleshooting
 If anything goes fatally wrong behind the scenes, the frontend will alert you by showing an -admittedly very general- error message. In most cases, the error will be due to the app backend being down, or to some really bizarre values being present in the form fields.
