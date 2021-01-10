@@ -5,7 +5,41 @@
 import {collectTravelInfo} from './aggregateData';
 import {postTripData} from './syncTripData';
 
-// TODO: Re-arrange functions
+/* MAIN function reacting to 'Save' events. */
+const handleSubmit = async function handleSubmit(event) {
+  // Note(!): Will also preserve the form input (desired for the moment).
+  event.preventDefault();
+  try {
+    // Assuming that all inputs have been validated by the UI or are empty
+    const city= getInputText('#city');
+    const country= getInputText('#country');
+    const departureDate= getInputText('#depart');
+    const returnDate= getInputText('#return');
+    console.debug('Calling handleSubmit');
+    // Note(!): Need this because inputs do not have the 'required' attribute.
+    // This avoids errors on load when fields are bound to still be empty.
+    const inputComplete = [city, country, departureDate, returnDate]
+        .every( (f) => f.length > 0);
+    if (!inputComplete) return;
+
+    const trip =
+      await collectTravelInfo(city, country, departureDate, returnDate);
+    const tripRecord = await postTripData(trip);
+    console.debug('Complete data: ' + JSON.stringify(tripRecord));
+    updateUI(tripRecord);
+  } catch (networkError) {
+    // TODO: Update error handling.
+    // Probably unrecoverable networking error ,i.e.: fetch rejected and threw
+    console.error(networkError);
+    // Very lazy!! Should rather use a dedicated <div>
+    // to display the error and hide the rest.
+    updateUI({
+      departureDate:
+        'Ooops. Looks like the service is down. Please, try again later.',
+    });
+  }
+};
+
 /* Will not validate the input! */
 const getInputText = function(selector) {
   const element = document.querySelector(selector);
@@ -15,7 +49,7 @@ const getInputText = function(selector) {
   return '';
 };
 
-/* Update UI to show the most recent trip. */
+/* Update the UI to show the most recent trip. */
 /* All trip fields are expected to be present
  * and filled with reasonable defaults! */
 // TODO: Add appropriate test.
@@ -79,42 +113,6 @@ const updateUI = function(trip) {
   }, '');
   rowForecasts.innerHTML = forecastsHtml;
   dynamicContent.style = 'container';
-};
-
-
-/* MAIN function called by event listener on 'Save' button */
-const handleSubmit = async function handleSubmit(event) {
-  // Note(!): Will also preserve the form input (desired for the moment).
-  event.preventDefault();
-  try {
-    // Assuming that all inputs have been validated by the UI or are empty
-    const city= getInputText('#city');
-    const country= getInputText('#country');
-    const departureDate= getInputText('#depart');
-    const returnDate= getInputText('#return');
-    console.debug('Calling handleSubmit');
-    // Note(!): Need this because inputs do not have the 'required' attribute.
-    // This avoids errors on load when fields are bound to still be empty.
-    const inputComplete = [city, country, departureDate, returnDate]
-        .every( (f) => f.length > 0);
-    if (!inputComplete) return;
-
-    const trip =
-      await collectTravelInfo(city, country, departureDate, returnDate);
-    const tripRecord = await postTripData(trip);
-    console.debug('Complete data: ' + JSON.stringify(tripRecord));
-    updateUI(tripRecord);
-  } catch (networkError) {
-    // TODO: Update error handling.
-    // Probably unrecoverable networking error ,i.e.: fetch rejected and threw
-    console.error(networkError);
-    // Very lazy!! Should rather use a dedicated <div>
-    // to display the error and hide the rest.
-    updateUI({
-      departureDate:
-        'Ooops. Looks like the service is down. Please, try again later.',
-    });
-  }
 };
 
 // Event listener to reload existing data
