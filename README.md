@@ -35,7 +35,7 @@ and then display a short summary of your trip, a landmark image of your destinat
 
 :zap: If running any of the build scripts fails due to problems with package `node-sass` try running `npm rebuild node-sass`. May take a while to complete.
 
-# Troubleshooting
+# Troubleshooting the App
 If anything goes fatally wrong behind the scenes, the frontend will alert you by showing an -admittedly very general- error message. In most cases, the error will be due to the app backend being down, or to some really bizarre values being present in the form fields.
 
 If none of the above conditions are to blame, take a look at the server console log for more detailed hints as to what went wrong.
