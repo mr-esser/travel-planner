@@ -16,13 +16,13 @@ const collectTravelInfo = async function(
   let rawImageData;
 
   try {
-    console.debug(`:::Fetching geo data for: ${city}, ${country}:::`);
+    // console.debug(`:::Fetching geo data for: ${city}, ${country}:::`);
     const geoData = await fetchGeo(city, country);
     const {lat, lng} = geoData.geonames[0];
     // TODO: Run in parallel
-    console.debug(`Fetching forecast for: ${lat} and ${lng}`);
+    // console.debug(`Fetching forecast for: ${lat} and ${lng}`);
     rawWeatherData = await fetchWeather(lat, lng);
-    console.debug(`Fetching image for: ${city} and ${country}`);
+    // console.debug(`Fetching image for: ${city} and ${country}`);
     rawImageData = await fetchImage(city);
   } catch (error) {
     // Data is incomplete, but it can still be posted and displayed.

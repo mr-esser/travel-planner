@@ -8,7 +8,7 @@ import defaultImage from './../media/luggage-640.jpg';
 
 /* MAIN function reacting to 'Save' events. */
 const handleSubmit = async function handleSubmit(event) {
-  console.debug(':::Calling handleSubmit:::');
+  // console.debug(':::Calling handleSubmit:::');
   // Note(!): Preventing the default event will also preserve
   // the form input (desired for the moment).
   event.preventDefault();
@@ -30,7 +30,7 @@ const handleSubmit = async function handleSubmit(event) {
     const trip =
       await collectTravelInfo(city, country, departureDate, returnDate);
     const tripRecord = await postTripData(trip);
-    console.debug(`:::Complete trip data: ${JSON.stringify(tripRecord)}:::`);
+    // console.debug(`:::Complete trip data: ${JSON.stringify(tripRecord)}:::`);
     updateUI(tripRecord);
   } catch (fatalError) {
     // Most likely networking error;
@@ -147,7 +147,7 @@ const showFatalError = function() {
 
 // Event listener to reload existing data
 window.addEventListener('DOMContentLoaded', () => {
-  console.debug('::::: Script loaded! :::::');
+  console.info('::::: Script loaded! :::::');
 
   // TODO: Re-enable!
   // Try to load data from the server on startup.

@@ -5,7 +5,7 @@
   "scripts": {
     "lint": "./node_modules/.bin/eslint --ext js ./",
     "test": "jest --testPathIgnorePatterns=^.*\\.integration\\.test\\.js$",
-    "itest": "jest --detectOpenHandles --testPathPattern=^.*\\.integration\\.test\\.js$",
+    "itest": "jest --testPathPattern=^.*\\.integration\\.test\\.js$",
     "dev-server": "webpack-dev-server --config webpack.dev.js --open 'Google Chrome'",
     "build": "webpack --config webpack.prod.js",
     "clean": "rm -rf dist",

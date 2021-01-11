@@ -35,7 +35,7 @@ const clearTrips = function() {
 /* Log all incoming requests for debugging purposes */
 // TODO: Add proper, configurable logging library
 app.all('*', function(req, res, next) {
-  console.debug(`${req.method} ${req.path} req:${JSON.stringify(req.body)}`);
+  // console.debug(`${req.method} ${req.path} req:${JSON.stringify(req.body)}`);
   next();
 });
 
@@ -53,7 +53,7 @@ app.get('/favicon.ico', function(req, res) {
 app.get('/geodata', async function(req, res, next) {
   try {
     const geoData = await fetchGeoData(req.query?.city, req.query?.country);
-    console.debug(JSON.stringify(geoData));
+    // console.debug(JSON.stringify(geoData));
     res.status(200).set('Content-Type', 'application/json').send(geoData);
   } catch (error) {
     next(error);
@@ -63,7 +63,7 @@ app.get('/geodata', async function(req, res, next) {
 app.get('/weather', async function(req, res, next) {
   try {
     const weatherData = await fetchWeatherData(req.query?.lat, req.query?.long);
-    console.debug(JSON.stringify(weatherData));
+    // console.debug(JSON.stringify(weatherData));
     res.status(200).set('Content-Type', 'application/json').send(weatherData);
   } catch (error) {
     next(error);
@@ -73,7 +73,7 @@ app.get('/weather', async function(req, res, next) {
 app.get('/imagedata', async function(req, res, next) {
   try {
     const imageData = await fetchImageData(req.query?.loc);
-    console.debug(JSON.stringify(imageData));
+    // console.debug(JSON.stringify(imageData));
     res.status(200).set('Content-Type', 'application/json').send(imageData);
   } catch (error) {
     next(error);

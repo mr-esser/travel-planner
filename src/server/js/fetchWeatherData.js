@@ -12,7 +12,7 @@ const fetchWeatherData = async function(
   check(latitude, longitude);
 
   const serviceUrl = getServiceUrl(latitude, longitude);
-  console.debug(serviceUrl?.toString());
+  // console.debug(serviceUrl?.toString());
 
   // Note(!): fetch will only reject on network errors!
   // Weather service uses proper HTTP response codes.

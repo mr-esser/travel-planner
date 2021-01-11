@@ -14,7 +14,7 @@ const fetchImageData = async function(
   check(location);
 
   const serviceUrl = getServiceUrl(location);
-  console.debug(serviceUrl?.toString());
+  // console.debug(serviceUrl?.toString());
 
   // Note(!): fetch will only reject on network errors!
   // Image service uses proper HTTP response codes.
