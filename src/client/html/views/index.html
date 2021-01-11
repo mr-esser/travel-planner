@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="author" content="Martin Esser" />
+  <meta name="description" content="A simple travel plannder" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Travel Planner</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+</head>
+
+<body>
+  <main>
+    <div class="container">
+      <header>
+        <h1>Travel Planner</h1>
+      </header>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="column">
+          <figure class="figure-dest">
+            <img id="img-dest" src="./../../media/luggage-640.jpg"
+              alt="Trolleys lined-up in front of a wall with backpacks on top." />
+          </figure>
+        </div>
+        <div class="column">
+          <form onSubmit="Client.handleSubmit(event)">
+            <div class="row">
+              <div class="column column-25">
+                <label for="city">City<sup>*</sup></label>
+              </div>
+              <div class="column column-bottom">
+                <input type="text" id="city" class="textinput" title="Destination city name. Standard Latin chars only."
+                  placeholder="City (e.g.: Berlin)" pattern="\s*\w(\s|\w)*" />
+              </div>
+            </div>
+            <div class="row">
+              <div class="column column-25">
+                <label for="country">Country<sup>*</sup></label>
+              </div>
+              <div class="column column-bottom">
+                <input type="text" id="country" class="textinput" title="Destination two-letter country code"
+                  placeholder="Country code (e.g.: DE)" pattern="\s*[A-Z]{2}\s*" />
+              </div>
+            </div>
+            <div class="row">
+              <div class="column column-25">
+                <label for="depart">Departing<sup>*</sup></label>
+              </div>
+              <div class="column column-bottom">
+                <!-- Big thanks to Aurelian Hermand for the regex pattern (see https://www.html5pattern.com/Dates)-->
+                <input type="text" id="depart" class="textinput" title="Departure date with format yyyy-mm-dd"
+                  placeholder="yyyy-mm-dd" pattern="\s*[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])\s*" />
+              </div>
+            </div>
+            <div class="row">
+              <div class="column column-25">
+                <label for="return">Returning<sup>*</sup></label>
+              </div>
+              <div class="column column-bottom">
+                <!-- Big thanks to Aurelian Hermand for the regex pattern (see https://www.html5pattern.com/Dates)-->
+                <input type="text" id="return" class="textinput" title="Return date with format yyyy-mm-dd"
+                  placeholder="yyyy-mm-dd" pattern="\s*[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])\s*" />
+              </div>
+            </div>
+            <div class="row">
+              <div class="column">
+                <button class="column button button-outline" title="Save trip">Save</button>
+              </div>
+            </div>
+          </form>
+          <div class="row">
+            <div id="summary" class="column">
+              <!-- Placeholder for trip summary -->
+            </div>
+          </div>
+          <div class="row">
+            <div id="header-forecast" class="column">
+              <!-- Placeholder for header -->
+            </div>
+          </div>
+          <div id="forecasts" class="row row-wrap force-flex-direction-row">
+            <!-- Placeholder for daily forecasts -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+<script>
+  // Check that service workers are supported
+  if ('serviceWorker' in navigator) {
+    // Use the window load event to keep the page load performant
+    window.addEventListener('load', () => {
+      navigator.serviceWorker
+        .register('/service-worker.js')
+        .catch((err) =>
+          console.error('Registering the service worker failed!')
+        );
+    });
+  }
+</script>
+
+</html>
