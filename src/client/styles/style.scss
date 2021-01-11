@@ -8,8 +8,8 @@
   margin-right: 2.5rem;
 }
 
-$purplish:  #9b4dca;
-input[type="text"] {
+$purplish: #9b4dca;
+.textinput {
   &:hover {
     border-color: $purplish;
     outline: 0;
